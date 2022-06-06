@@ -12,8 +12,6 @@ import timber.log.Timber;
 
 /**
  * @author Ztiany
- * Email: ztiany3@gmail.com
- * Date : 2018-11-13 14:57
  */
 class JsonDeserializers {
 
@@ -108,7 +106,6 @@ class JsonDeserializers {
             try {
                 return json.getAsString();
             } catch (Exception e) {
-
                 Timber.e(e, "StringJsonDeserializer-deserialize-error:%s", (json != null ? json.toString() : ""));
                 return null;
             }

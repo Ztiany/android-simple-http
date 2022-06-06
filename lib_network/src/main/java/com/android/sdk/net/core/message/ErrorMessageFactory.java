@@ -42,10 +42,8 @@ public class ErrorMessageFactory {
             int errorType = ((ServerErrorException) exception).getErrorType();
             if (errorType == ServerErrorException.SERVER_DATA_ERROR) {
                 message = errorMessage.serverDataErrorMessage(exception);
-            } else if (errorType == ServerErrorException.UNKNOW_ERROR) {
-                message = errorMessage.serverErrorMessage(exception);
-            } else if (errorType == ServerErrorException.SERVER_NO_DATA) {
-                message = errorMessage.serverReturningNullDataErrorMessage(exception);
+            } else if (errorType == ServerErrorException.SERVER_NULL_DATA) {
+                message = errorMessage.serverNullEntityErrorMessage(exception);
             }
         }
 

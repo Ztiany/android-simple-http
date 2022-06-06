@@ -19,7 +19,6 @@ import kotlin.Unit;
 
 /**
  * @author Ztiany
- * Date: 2018-08-15
  */
 public class GsonUtils {
 

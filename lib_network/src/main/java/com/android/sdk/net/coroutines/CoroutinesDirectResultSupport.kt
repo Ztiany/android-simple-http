@@ -11,6 +11,7 @@ internal suspend fun <T> realCallDirectly(
     exceptionFactory: ExceptionFactory? = null
 ): T {
 
+    /* result must not be null. */
     val result: Result<T>
 
     try {
@@ -31,7 +32,7 @@ internal suspend fun <T> realCallDirectly(
 
     } else if (requireNonNullData) { //如果约定必须返回的数据却没有返回数据，则认为是服务器错误。
 
-        result.data ?: throw ServerErrorException(ServerErrorException.SERVER_NO_DATA)
+        result.data ?: throw ServerErrorException(ServerErrorException.SERVER_NULL_DATA)
 
     } else {
 

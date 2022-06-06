@@ -7,11 +7,11 @@ import androidx.annotation.Nullable;
 import com.android.sdk.net.HostConfigProvider;
 import com.android.sdk.net.NetContext;
 import com.android.sdk.net.core.exception.ApiErrorException;
-import com.android.sdk.net.core.exception.NetworkErrorException;
 import com.android.sdk.net.core.exception.ServerErrorException;
 import com.android.sdk.net.core.provider.ApiHandler;
 import com.android.sdk.net.core.result.ExceptionFactory;
 import com.android.sdk.net.core.result.Result;
+import com.android.sdk.net.coroutines.CoroutinesSupportCommonKt;
 
 import org.reactivestreams.Publisher;
 
@@ -23,6 +23,7 @@ import io.reactivex.ObservableTransformer;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
 import io.reactivex.SingleTransformer;
+import io.reactivex.functions.Function;
 
 public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstream>> implements ObservableTransformer<T, Downstream>, FlowableTransformer<T, Downstream>, SingleTransformer<T, Downstream> {
 
@@ -47,8 +48,10 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
     @Override
     public Publisher<Downstream> apply(Flowable<T> upstream) {
 
-        Flowable<Downstream> downstreamFlowable = upstream
-                .switchIfEmpty(Flowable.error(newEmptyError()))
+        Flowable<Downstream> downstreamFlowable = upstream.
+                onErrorResumeNext(throwable -> {
+                    return Flowable.error(transformError(throwable));
+                })
                 .map(this::processData);
 
         @SuppressWarnings("unchecked")
@@ -67,7 +70,9 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
     public ObservableSource<Downstream> apply(Observable<T> upstream) {
 
         Observable<Downstream> downstreamObservable = upstream
-                .switchIfEmpty(Observable.error(newEmptyError()))
+                .onErrorResumeNext(throwable -> {
+                    return Observable.error(transformError(throwable));
+                })
                 .map(this::processData);
 
         @SuppressWarnings("unchecked")
@@ -85,7 +90,9 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
     @Override
     public SingleSource<Downstream> apply(Single<T> upstream) {
 
-        Single<Downstream> downstreamSingle = upstream.map(this::processData);
+        Single<Downstream> downstreamSingle = upstream
+                .onErrorResumeNext(throwable -> Single.error(transformError(throwable)))
+                .map(this::processData);
 
         @SuppressWarnings("unchecked")
         RxResultPostTransformer<Downstream> rxResultPostTransformer =
@@ -98,13 +105,6 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
         }
     }
 
-    private Throwable newEmptyError() {
-        if (NetContext.get().isConnected()) {
-            return new ServerErrorException(ServerErrorException.UNKNOW_ERROR);//有连接无数据，服务器错误
-        } else {
-            return new NetworkErrorException();//无连接网络错误
-        }
-    }
 
     private Downstream processData(Result<Upstream> rResult) {
 
@@ -112,26 +112,19 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
         String flag = netContext.getHostFlagHolder().getFlag(rResult.getClass());
         HostConfigProvider hostConfigProvider = netContext.hostConfigProvider(flag);
 
-        // 参考 ErrorJsonLenientConverterFactory，这个步骤已经不再需要了。
-        /*if (hostConfigProvider.errorDataAdapter().isErrorDataStub(rResult)) {
 
-            throwAs(new ServerErrorException(ServerErrorException.SERVER_DATA_ERROR));//服务器数据格式错误
-
-        } else*/
         if (!rResult.isSuccess()) {//检测响应码是否正确
-
             ApiHandler apiHandler = hostConfigProvider.aipHandler();
             if (apiHandler != null) {
                 apiHandler.onApiError(rResult);
             }
-
             throwAs(createException(rResult, flag, hostConfigProvider));
         }
 
         if (mRequireNonNullData) {
             //如果约定必须返回的数据却没有返回数据，则认为是服务器错误
             if (rResult.getData() == null) {
-                throwAs(new ServerErrorException(ServerErrorException.UNKNOW_ERROR));
+                throwAs(new ServerErrorException(ServerErrorException.SERVER_NULL_DATA));
             }
         }
 
@@ -158,6 +151,10 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
     @SuppressWarnings("unchecked")
     private <E extends Throwable> void throwAs(Throwable throwable) throws E {
         throw (E) throwable;
+    }
+
+    private Throwable transformError(Throwable throwable) {
+        return CoroutinesSupportCommonKt.transformHttpException(throwable);
     }
 
 }

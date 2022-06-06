@@ -5,12 +5,12 @@ import com.android.sdk.net.core.result.Result
 import com.android.sdk.net.coroutines.*
 import kotlinx.coroutines.delay
 import timber.log.Timber
-
+import kotlin.text.Typography.times
 
 /** TODO: If the real parameterized Type of Result is needed for more features, obtain that by reflecting. */
-suspend fun <T : Any?> executeApiCallNullable(
+suspend fun <T> executeApiCallNullable(
     exceptionFactory: ExceptionFactory? = null,
-    call: suspend () -> Result<T>
+    call: suspend () -> Result<T?>
 ): T? {
 
     val retryPostAction = retryPostAction()
@@ -24,12 +24,12 @@ suspend fun <T : Any?> executeApiCallNullable(
     return result
 }
 
-suspend fun <T : Any?> executeApiCallRetryNullable(
+suspend fun <T> executeApiCallRetryNullable(
     times: Int = RETRY_TIMES,
     delay: Long = RETRY_DELAY,
     exceptionFactory: ExceptionFactory? = null,
     checker: ((Throwable) -> Boolean)? = null,
-    call: suspend () -> Result<T>
+    call: suspend () -> Result<T?>
 ): T? {
 
     var result = executeApiCallNullable(exceptionFactory, call)

@@ -11,6 +11,7 @@ internal suspend fun <T> realCall(
     exceptionFactory: ExceptionFactory? = null
 ): CallResult<T> {
 
+    /* result must not be null. */
     val result: Result<T>
 
     try {
@@ -33,7 +34,7 @@ internal suspend fun <T> realCall(
 
         val data: T? = result.data
         if (data == null) {
-            CallResult.Error(ServerErrorException(ServerErrorException.SERVER_NO_DATA))
+            CallResult.Error(ServerErrorException(ServerErrorException.SERVER_NULL_DATA))
         } else {
             CallResult.Success(data)
         }

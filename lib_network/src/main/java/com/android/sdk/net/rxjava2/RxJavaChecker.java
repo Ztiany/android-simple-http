@@ -9,8 +9,7 @@ public class RxJavaChecker {
             try {
                 Class.forName("retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory");
                 mHasRxJava2 = true;
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+            } catch (ClassNotFoundException ignored) {
                 mHasRxJava2 = false;
             }
         }
