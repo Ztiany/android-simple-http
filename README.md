@@ -22,5 +22,5 @@
 
 ```groovy
 // https://mvnrepository.com/artifact/io.github.ztiany/android-simple-http
-implementation 'io.github.ztiany:android-simple-http:1.0.2'
+implementation 'io.github.ztiany:android-simple-http:1.0.3'
 ```
