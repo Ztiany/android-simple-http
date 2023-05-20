@@ -2,13 +2,15 @@ package com.android.sdk.net.coroutines
 
 import com.android.sdk.net.NetContext
 import com.android.sdk.net.core.exception.ServerErrorException
+import com.android.sdk.net.core.provider.ErrorBodyParser
 import com.android.sdk.net.core.result.ExceptionFactory
 import com.android.sdk.net.core.result.Result
 
 internal suspend fun <T> realCall(
     call: suspend () -> Result<T>,
     requireNonNullData: Boolean,
-    exceptionFactory: ExceptionFactory? = null
+    exceptionFactory: ExceptionFactory? = null,
+    errorBodyParser: ErrorBodyParser? = null,
 ): CallResult<T> {
 
     /* result must not be null. */
@@ -17,7 +19,7 @@ internal suspend fun <T> realCall(
     try {
         result = call.invoke()
     } catch (throwable: Throwable) {
-        return CallResult.Error(transformHttpException(throwable))
+        return CallResult.Error(transformHttpException(throwable, errorBodyParser))
     }
 
     val netContext = NetContext.get()
@@ -51,27 +53,27 @@ sealed class CallResult<out T> {
 
     class Error(val error: Throwable) : CallResult<Nothing>()
 
-    fun isSuccessful() = this is Success
+    fun isSuccess() = this is Success
 
-    fun isFailed() = this is Error
+    fun isError() = this is Error
 
     override fun toString(): String {
         return when (this) {
-            is Success<*> -> "Success[data=$data]"
-            is Error -> "Error[exception=$error]"
+            is Success<*> -> "Success [data: $data]"
+            is Error -> "Error [exception: $error]"
         }
     }
 
 }
 
-inline infix fun <T> CallResult<T>.onSucceeded(onSuccess: (T) -> Unit): CallResult<T> {
+inline infix fun <T> CallResult<T>.onSuccess(onSuccess: (T) -> Unit): CallResult<T> {
     if (this is CallResult.Success) {
         onSuccess(this.data)
     }
     return this
 }
 
-inline infix fun <T> CallResult<T>.onFailed(onFailed: (Throwable) -> Unit): CallResult<T> {
+inline infix fun <T> CallResult<T>.onError(onFailed: (Throwable) -> Unit): CallResult<T> {
     if (this is CallResult.Error) {
         onFailed(this.error)
     }

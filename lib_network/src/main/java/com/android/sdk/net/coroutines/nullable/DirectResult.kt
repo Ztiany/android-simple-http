@@ -1,5 +1,6 @@
 package com.android.sdk.net.coroutines.nullable
 
+import com.android.sdk.net.core.provider.ErrorBodyParser
 import com.android.sdk.net.core.result.ExceptionFactory
 import com.android.sdk.net.core.result.Result
 import com.android.sdk.net.coroutines.*
@@ -10,15 +11,16 @@ import kotlin.text.Typography.times
 /** TODO: If the real parameterized Type of Result is needed for more features, obtain that by reflecting. */
 suspend fun <T> executeApiCallNullable(
     exceptionFactory: ExceptionFactory? = null,
+    errorBodyParser: ErrorBodyParser? = null,
     call: suspend () -> Result<T?>
 ): T? {
 
     val retryPostAction = retryPostAction()
 
-    var result = realCallDirectly(call, false, exceptionFactory)
+    var result = realCallDirectly(call, false, exceptionFactory, errorBodyParser)
 
     if (result is CallResult.Error && retryPostAction.retry(result.error)) {
-        result = realCallDirectly(call, false, exceptionFactory)
+        result = realCallDirectly(call, false, exceptionFactory, errorBodyParser)
     }
 
     return result
@@ -28,11 +30,12 @@ suspend fun <T> executeApiCallRetryNullable(
     times: Int = RETRY_TIMES,
     delay: Long = RETRY_DELAY,
     exceptionFactory: ExceptionFactory? = null,
+    errorBodyParser: ErrorBodyParser? = null,
     checker: ((Throwable) -> Boolean)? = null,
     call: suspend () -> Result<T?>
 ): T? {
 
-    var result = executeApiCallNullable(exceptionFactory, call)
+    var result = executeApiCallNullable(exceptionFactory, errorBodyParser, call)
     var count = 0
 
     repeat(times) {
@@ -40,7 +43,7 @@ suspend fun <T> executeApiCallRetryNullable(
         if (result is CallResult.Error && (checker == null || checker((result as CallResult.Error).error))) {
             delay(delay)
             Timber.d("executeApiCallRetry at ${++count}")
-            result = executeApiCallNullable(exceptionFactory, call)
+            result = executeApiCallNullable(exceptionFactory, errorBodyParser, call)
         } else {
             return result
         }

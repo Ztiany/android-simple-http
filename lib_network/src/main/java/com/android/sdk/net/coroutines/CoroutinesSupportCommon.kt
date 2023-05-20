@@ -3,6 +3,7 @@ package com.android.sdk.net.coroutines
 import com.android.sdk.net.HostConfigProvider
 import com.android.sdk.net.NetContext
 import com.android.sdk.net.core.exception.ApiErrorException
+import com.android.sdk.net.core.provider.ErrorBodyParser
 import com.android.sdk.net.core.result.ExceptionFactory
 import com.android.sdk.net.core.result.Result
 import retrofit2.HttpException
@@ -51,9 +52,12 @@ private val EMPTY_ENTRY = object : CoroutinesResultPostProcessor {
     }
 }
 
-internal fun transformHttpException(throwable: Throwable): Throwable {
+internal fun transformHttpException(
+    throwable: Throwable,
+    errorBodyParser: ErrorBodyParser?,
+): Throwable {
     Timber.e(throwable, "transformHttpException")
-    val errorBodyHandler = NetContext.get().commonProvider().errorBodyHandler()
+    val errorBodyHandler = errorBodyParser ?: NetContext.get().commonProvider().errorBodyHandler()
 
     return if (errorBodyHandler != null && throwable is HttpException && throwable.code() < 500/*http status code*/) {
         val errorBody = throwable.response()?.errorBody()

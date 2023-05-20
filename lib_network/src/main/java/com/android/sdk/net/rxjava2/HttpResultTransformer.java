@@ -9,6 +9,7 @@ import com.android.sdk.net.NetContext;
 import com.android.sdk.net.core.exception.ApiErrorException;
 import com.android.sdk.net.core.exception.ServerErrorException;
 import com.android.sdk.net.core.provider.ApiHandler;
+import com.android.sdk.net.core.provider.ErrorBodyParser;
 import com.android.sdk.net.core.result.ExceptionFactory;
 import com.android.sdk.net.core.result.Result;
 import com.android.sdk.net.coroutines.CoroutinesSupportCommonKt;
@@ -31,17 +32,20 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
 
     private final DataExtractor<Downstream, Upstream> mDataExtractor;
 
-    @Nullable
-    private final ExceptionFactory mExceptionFactory;
+    @Nullable private final ExceptionFactory mExceptionFactory;
+
+    @Nullable private final ErrorBodyParser mErrorBodyParser;
 
     public HttpResultTransformer(
             boolean requireNonNullData,
             @NonNull DataExtractor<Downstream, Upstream> dataExtractor,
-            @Nullable ExceptionFactory exceptionFactory
+            @Nullable ExceptionFactory exceptionFactory,
+            @Nullable ErrorBodyParser errorBodyParser
     ) {
         mRequireNonNullData = requireNonNullData;
         mDataExtractor = dataExtractor;
         mExceptionFactory = exceptionFactory;
+        mErrorBodyParser = errorBodyParser;
     }
 
     @NonNull
@@ -154,7 +158,7 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
     }
 
     private Throwable transformError(Throwable throwable) {
-        return CoroutinesSupportCommonKt.transformHttpException(throwable);
+        return CoroutinesSupportCommonKt.transformHttpException(throwable, mErrorBodyParser);
     }
 
 }

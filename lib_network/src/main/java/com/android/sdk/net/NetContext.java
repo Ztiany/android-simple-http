@@ -19,8 +19,6 @@ import okhttp3.OkHttpClient;
 
 /**
  * @author Ztiany
- * Email: ztiany3@gmail.com
- * Date : 2018-11-08 11:06
  */
 public class NetContext {
 

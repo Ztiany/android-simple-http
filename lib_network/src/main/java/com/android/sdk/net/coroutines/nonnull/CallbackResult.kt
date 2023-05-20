@@ -1,5 +1,6 @@
 package com.android.sdk.net.coroutines.nonnull
 
+import com.android.sdk.net.core.provider.ErrorBodyParser
 import com.android.sdk.net.core.result.ExceptionFactory
 import com.android.sdk.net.core.result.Result
 import com.android.sdk.net.coroutines.*
@@ -9,12 +10,13 @@ import timber.log.Timber
 /** TODO: If the real parameterized Type of Result is needed for more features, obtain that by reflecting. */
 suspend fun <T : Any> apiCall(
     exceptionFactory: ExceptionFactory? = null,
+    errorBodyParser: ErrorBodyParser? = null,
     call: suspend () -> Result<T>
 ): CallResult<T> {
 
     val retryPostAction = retryPostAction()
 
-    var result = realCall(call, true, exceptionFactory)
+    var result = realCall(call, true, exceptionFactory, errorBodyParser)
 
     if (result is CallResult.Error && retryPostAction.retry(result.error)) {
         result = realCall(call, true, exceptionFactory)
@@ -27,11 +29,12 @@ suspend fun <T : Any> apiCallRetry(
     times: Int = RETRY_TIMES,
     delay: Long = RETRY_DELAY,
     exceptionFactory: ExceptionFactory? = null,
+    errorBodyParser: ErrorBodyParser? = null,
     checker: ((Throwable) -> Boolean)? = null,
     call: suspend () -> Result<T>,
 ): CallResult<T> {
 
-    var result = apiCall(exceptionFactory, call)
+    var result = apiCall(exceptionFactory, errorBodyParser, call)
     var count = 0
 
     repeat(times) {
@@ -39,7 +42,7 @@ suspend fun <T : Any> apiCallRetry(
         if (result is CallResult.Error && (checker == null || checker((result as CallResult.Error).error))) {
             delay(delay)
             Timber.d("executeApiCallRetry at ${++count}")
-            result = apiCall(exceptionFactory, call)
+            result = apiCall(exceptionFactory, errorBodyParser, call)
         } else {
             return result
         }

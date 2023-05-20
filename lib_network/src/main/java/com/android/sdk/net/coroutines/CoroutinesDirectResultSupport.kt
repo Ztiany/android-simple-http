@@ -2,13 +2,15 @@ package com.android.sdk.net.coroutines
 
 import com.android.sdk.net.NetContext
 import com.android.sdk.net.core.exception.ServerErrorException
+import com.android.sdk.net.core.provider.ErrorBodyParser
 import com.android.sdk.net.core.result.ExceptionFactory
 import com.android.sdk.net.core.result.Result
 
 internal suspend fun <T> realCallDirectly(
     call: suspend () -> Result<T>,
     requireNonNullData: Boolean,
-    exceptionFactory: ExceptionFactory? = null
+    exceptionFactory: ExceptionFactory? = null,
+    errorBodyParser: ErrorBodyParser? = null,
 ): T {
 
     /* result must not be null. */
@@ -17,7 +19,7 @@ internal suspend fun <T> realCallDirectly(
     try {
         result = call.invoke()
     } catch (throwable: Throwable) {
-        throw transformHttpException(throwable)
+        throw transformHttpException(throwable, errorBodyParser)
     }
 
     val netContext = NetContext.get()

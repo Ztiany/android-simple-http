@@ -1,8 +1,11 @@
 package com.android.sdk.net.rxjava2;
 
+import com.android.sdk.net.core.provider.ErrorBodyParser;
 import com.android.sdk.net.core.result.ExceptionFactory;
 import com.android.sdk.net.core.result.Result;
 import com.github.dmstocking.optional.java.util.Optional;
+
+import org.jetbrains.annotations.Nullable;
 
 
 /**
@@ -12,35 +15,67 @@ import com.github.dmstocking.optional.java.util.Optional;
 public class ResultHandlers {
 
     private static class ResultTransformer<Upstream, T extends Result<Upstream>> extends HttpResultTransformer<Upstream, Upstream, T> {
+
         ResultTransformer() {
-            super(true, Result::getData, null);
+            super(true, Result::getData, null, null);
         }
 
-        ResultTransformer(ExceptionFactory exceptionFactory) {
-            super(true, Result::getData, exceptionFactory);
+        ResultTransformer(@Nullable ErrorBodyParser errorBodyParser) {
+            super(true, Result::getData, null, errorBodyParser);
         }
+
+        ResultTransformer(@Nullable ExceptionFactory exceptionFactory) {
+            super(true, Result::getData, exceptionFactory, null);
+        }
+
+        ResultTransformer(@Nullable ExceptionFactory exceptionFactory, @Nullable ErrorBodyParser errorBodyParser) {
+            super(true, Result::getData, exceptionFactory, errorBodyParser);
+        }
+
     }
 
     private static class OptionalResultTransformer<Upstream, T extends Result<Upstream>> extends HttpResultTransformer<Upstream, Optional<Upstream>, T> {
+
         OptionalResultTransformer() {
-            super(false, rResult -> Optional.ofNullable(rResult.getData()), null);
+            super(false, rResult -> Optional.ofNullable(rResult.getData()), null, null);
         }
 
-        OptionalResultTransformer(ExceptionFactory exceptionFactory) {
-            super(false, rResult -> Optional.ofNullable(rResult.getData()), exceptionFactory);
+        OptionalResultTransformer(@Nullable ExceptionFactory exceptionFactory) {
+            super(false, rResult -> Optional.ofNullable(rResult.getData()), exceptionFactory, null);
         }
+
+        OptionalResultTransformer(@Nullable ErrorBodyParser errorBodyParser) {
+            super(false, rResult -> Optional.ofNullable(rResult.getData()), null, errorBodyParser);
+        }
+
+        OptionalResultTransformer(@Nullable ExceptionFactory exceptionFactory, @Nullable ErrorBodyParser errorBodyParser) {
+            super(false, rResult -> Optional.ofNullable(rResult.getData()), exceptionFactory, errorBodyParser);
+        }
+
     }
 
     private static class ResultChecker<Upstream, T extends Result<Upstream>> extends HttpResultTransformer<Upstream, T, T> {
+
         @SuppressWarnings("unchecked")
         ResultChecker() {
-            super(false, rResult -> (T) rResult, null);
+            super(false, rResult -> (T) rResult, null, null);
         }
 
         @SuppressWarnings("unchecked")
-        ResultChecker(ExceptionFactory exceptionFactory) {
-            super(false, rResult -> (T) rResult, exceptionFactory);
+        ResultChecker(@Nullable ExceptionFactory exceptionFactory) {
+            super(false, rResult -> (T) rResult, exceptionFactory, null);
         }
+
+        @SuppressWarnings("unchecked")
+        ResultChecker(@Nullable ErrorBodyParser errorBodyParser) {
+            super(false, rResult -> (T) rResult, null, errorBodyParser);
+        }
+
+        @SuppressWarnings("unchecked")
+        ResultChecker(@Nullable ExceptionFactory exceptionFactory, @Nullable ErrorBodyParser errorBodyParser) {
+            super(false, rResult -> (T) rResult, exceptionFactory, errorBodyParser);
+        }
+
     }
 
     private static final ResultTransformer DATA_TRANSFORMER = new ResultTransformer();
