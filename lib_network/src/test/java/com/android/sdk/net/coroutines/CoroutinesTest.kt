@@ -1,7 +1,9 @@
 package com.android.sdk.net.coroutines
 
 import com.android.sdk.net.core.result.Result
+import com.android.sdk.net.coroutines.nonnull.apiCall
 import com.android.sdk.net.coroutines.nonnull.executeApiCall
+import com.android.sdk.net.coroutines.nullable.apiCallNullable
 import com.android.sdk.net.coroutines.nullable.executeApiCallNullable
 
 private class HttpResult<T>(override val data: T, override val code: Int, override val message: String) : Result<T> {
@@ -26,5 +28,21 @@ private suspend fun test(testAPI: TestAPI) {
 
     val data2 = executeApiCallNullable {
         testAPI.getDataNullable()
+    }
+
+    apiCall {
+        testAPI.getData()
+    } onSuccess {
+
+    } onError {
+
+    }
+
+    apiCallNullable {
+        testAPI.getDataNullable()
+    } onError {
+
+    } onSuccess {
+
     }
 }
