@@ -38,15 +38,19 @@ dependencies {
     implementation 'androidx.fragment:fragment-ktx:1.4.1'
     implementation "androidx.activity:activity-ktx:1.4.0"
 
+    implementation 'com.blankj:utilcodex:1.31.1'
+
     implementation "com.jakewharton.timber:timber:4.7.1"
+    implementation "com.squareup.retrofit2:converter-gson:2.9.0"
+    implementation "com.squareup.okhttp3:logging-interceptor:4.10.0"
 
     implementation project(':lib_network')
 
     //optional
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.6.10"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.8.20"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.0"
     //optional
-    implementation "io.reactivex.rxjava2:rxjava:2.2.19"
+    implementation "io.reactivex.rxjava2:rxjava:2.2.21"
     implementation "com.squareup.retrofit2:adapter-rxjava2:2.9.0"
     implementation "com.github.dmstocking:support-optional:1.2"
 }

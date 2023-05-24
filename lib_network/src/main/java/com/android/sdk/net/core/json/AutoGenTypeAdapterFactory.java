@@ -6,9 +6,11 @@ import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
 
 /**
- * https://gist.github.com/JakeWharton/0d67d01badcee0ae7bc9
- * https://gist.github.com/Piasy/fa507251da452d36b221
- * 使用AutoGson注解自动映射，比如把需要反序列化的抽象类映射到具体的实现
+ * 使用 AutoGson 注解自动映射，比如把需要反序列化的抽象类映射到具体的实现。具体参考：
+ * <ol>
+ *     <li><a href="https://gist.github.com/JakeWharton/0d67d01badcee0ae7bc9">JakeWharton/AutoGson.java</a></li>
+ *     <li><a href="https://gist.github.com/Piasy/fa507251da452d36b221">Piasy/AutoGenTypeAdapterFactory.java</a></li>
+ * </ol>
  */
 public final class AutoGenTypeAdapterFactory implements TypeAdapterFactory {
 

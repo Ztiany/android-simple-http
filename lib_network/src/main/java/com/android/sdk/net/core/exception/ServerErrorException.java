@@ -3,7 +3,7 @@ package com.android.sdk.net.core.exception;
 import androidx.annotation.NonNull;
 
 /**
- * 表示服务器异常
+ * @author Ztiany
  */
 public class ServerErrorException extends RuntimeException {
 

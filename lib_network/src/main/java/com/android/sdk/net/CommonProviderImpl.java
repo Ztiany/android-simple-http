@@ -9,40 +9,16 @@ import com.android.sdk.net.core.provider.PlatformInteractor;
 import com.android.sdk.net.coroutines.CoroutinesResultPostProcessor;
 import com.android.sdk.net.rxjava2.RxResultPostTransformer;
 
-public class CommonProviderImpl implements CommonProvider {
+final class CommonProviderImpl implements CommonProvider {
 
     ErrorMessage mErrorMessage;
 
-    CoroutinesResultPostProcessor mCoroutinesResultPostProcessor;
-
-    ErrorBodyParser mErrorBodyParser;
-
     PlatformInteractor mPlatformInteractor;
-
-    RxResultPostTransformer<?> mRxResultPostTransformer;
 
     @NonNull
     @Override
     public ErrorMessage errorMessage() {
         return mErrorMessage;
-    }
-
-    @Nullable
-    @Override
-    public CoroutinesResultPostProcessor coroutinesResultPostProcessor() {
-        return mCoroutinesResultPostProcessor;
-    }
-
-    @Nullable
-    @Override
-    public RxResultPostTransformer<?> rxResultPostTransformer() {
-        return mRxResultPostTransformer;
-    }
-
-    @Nullable
-    @Override
-    public ErrorBodyParser errorBodyHandler() {
-        return mErrorBodyParser;
     }
 
     @NonNull
@@ -53,7 +29,7 @@ public class CommonProviderImpl implements CommonProvider {
 
     public void checkRequirement() {
         if (mPlatformInteractor == null || mErrorMessage == null) {
-            throw new NullPointerException("You must provide following object：ErrorMessage, PlatformInteractor.");
+            throw new NullPointerException("You must provide the implementation of ErrorMessage and PlatformInteractor.");
         }
     }
 

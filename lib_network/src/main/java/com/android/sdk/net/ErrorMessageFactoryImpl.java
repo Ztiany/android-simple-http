@@ -1,14 +1,14 @@
-package com.android.sdk.net.core.message;
+package com.android.sdk.net;
 
 import android.text.TextUtils;
 
-import androidx.annotation.RestrictTo;
+import androidx.annotation.NonNull;
 
-import com.android.sdk.net.NetContext;
 import com.android.sdk.net.core.exception.ApiErrorException;
-import com.android.sdk.net.core.exception.NetworkErrorException;
+import com.android.sdk.net.core.exception.ErrorMessageFactory;
 import com.android.sdk.net.core.exception.ServerErrorException;
 import com.android.sdk.net.core.provider.ErrorMessage;
+import com.android.sdk.net.rxjava2.RxJavaChecker;
 
 import java.io.IOException;
 import java.util.NoSuchElementException;
@@ -18,22 +18,20 @@ import timber.log.Timber;
 
 /**
  * @author Ztiany
- * Email: ztiany3@gmail.com
- * Date : 2018-11-08 16:11
  */
-@RestrictTo(RestrictTo.Scope.LIBRARY)
-public class ErrorMessageFactory {
+final class ErrorMessageFactoryImpl implements ErrorMessageFactory {
 
-    public static CharSequence createMessage(Throwable exception) {
-
+    @NonNull
+    @Override
+    public CharSequence createMessage(@NonNull Throwable exception) {
         ErrorMessage errorMessage = NetContext.get().commonProvider().errorMessage();
 
         Timber.d("createMessage with：%s", exception.toString());
 
         CharSequence message = null;
-        //SocketTimeoutException, NetworkErrorException extends IOException
+        //SocketTimeoutException
         //1：网络连接错误处理
-        if (exception instanceof IOException || exception instanceof NetworkErrorException) {
+        if (exception instanceof IOException) {
             message = errorMessage.netErrorMessage(exception);
         }
 
@@ -43,15 +41,15 @@ public class ErrorMessageFactory {
             if (errorType == ServerErrorException.SERVER_DATA_ERROR) {
                 message = errorMessage.serverDataErrorMessage(exception);
             } else if (errorType == ServerErrorException.SERVER_NULL_DATA) {
-                message = errorMessage.serverNullEntityErrorMessage(exception);
+                message = errorMessage.serverReturningNullEntityErrorMessage(exception);
             }
         }
 
-        //3：响应码非200处理
+        //3：响应码非 200 处理
         else if (exception instanceof HttpException) {
             int code = ((HttpException) exception).code();
             if (code >= 500/*http 500 表示服务器错误*/) {
-                message = errorMessage.serverErrorMessage(exception);
+                message = errorMessage.serverInternalErrorMessage(exception);
             } else if (code >= 400/*http 400 表示客户端请求出错*/) {
                 message = errorMessage.clientRequestErrorMessage(exception);
             }
@@ -66,8 +64,8 @@ public class ErrorMessageFactory {
         }
 
         //6：RxJava Single
-        else if (exception instanceof NoSuchElementException) {
-            message = errorMessage.serverErrorMessage(exception);
+        else if (RxJavaChecker.hasRxJava2() && exception instanceof NoSuchElementException) {
+            message = errorMessage.serverInternalErrorMessage(exception);
         }
 
         //7：Others

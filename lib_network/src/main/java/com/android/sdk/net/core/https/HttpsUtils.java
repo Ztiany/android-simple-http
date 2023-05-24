@@ -1,5 +1,7 @@
 package com.android.sdk.net.core.https;
 
+import android.annotation.SuppressLint;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyManagementException;
@@ -31,12 +33,12 @@ public class HttpsUtils {
     }
 
     /**
-     * 创建SSLParams
+     * 创建 SSLParams。
      *
-     * @param certificates 本地证书流
-     * @param bksFile      用于双向验证，本地bks证书
-     * @param password     本地证书密码
-     * @return 创建的SSLParams
+     * @param certificates 本地证书流。
+     * @param bksFile      用于双向验证，本地 bks 证书。
+     * @param password     本地证书密码。
+     * @return 创建的 SSLParams。
      */
     public static SSLParams getSslSocketFactory(InputStream[] certificates, InputStream bksFile, String password) {
         SSLParams sslParams = new SSLParams();
@@ -59,32 +61,38 @@ public class HttpsUtils {
         }
     }
 
-    private class UnSafeHostnameVerifier implements HostnameVerifier {
+    private static class UnSafeHostnameVerifier implements HostnameVerifier {
+
+        @SuppressLint("BadHostnameVerifier")
         @Override
         public boolean verify(String hostname, SSLSession session) {
             return true;
         }
+
     }
 
+    @SuppressLint("CustomX509TrustManager")
     private static class UnSafeTrustManager implements X509TrustManager {
+
+        @SuppressLint("TrustAllX509TrustManager")
         @Override
-        public void checkClientTrusted(X509Certificate[] chain, String authType)
-                throws CertificateException {
+        public void checkClientTrusted(X509Certificate[] chain, String authType) {
         }
 
+        @SuppressLint("TrustAllX509TrustManager")
         @Override
-        public void checkServerTrusted(X509Certificate[] chain, String authType)
-                throws CertificateException {
+        public void checkServerTrusted(X509Certificate[] chain, String authType) {
         }
 
         @Override
         public X509Certificate[] getAcceptedIssuers() {
             return new java.security.cert.X509Certificate[]{};
         }
+
     }
 
     private static TrustManager[] prepareTrustManager(InputStream... certificates) {
-        if (certificates == null || certificates.length <= 0) return null;
+        if (certificates == null || certificates.length == 0) return null;
         try {
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -134,10 +142,11 @@ public class HttpsUtils {
     }
 
 
+    @SuppressLint("CustomX509TrustManager")
     private static class SafeTrustManager implements X509TrustManager {
 
-        private X509TrustManager defaultTrustManager;
-        private X509TrustManager localTrustManager;
+        private final X509TrustManager defaultTrustManager;
+        private final X509TrustManager localTrustManager;
 
         SafeTrustManager(X509TrustManager localTrustManager) throws NoSuchAlgorithmException, KeyStoreException {
             TrustManagerFactory var4 = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
@@ -146,8 +155,9 @@ public class HttpsUtils {
             this.localTrustManager = localTrustManager;
         }
 
+        @SuppressLint("TrustAllX509TrustManager")
         @Override
-        public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+        public void checkClientTrusted(X509Certificate[] chain, String authType) {
         }
 
         @Override

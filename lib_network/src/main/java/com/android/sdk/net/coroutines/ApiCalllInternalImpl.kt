@@ -2,33 +2,51 @@ package com.android.sdk.net.coroutines
 
 import com.android.sdk.net.NetContext
 import com.android.sdk.net.core.exception.ServerErrorException
-import com.android.sdk.net.core.result.ExceptionFactory
 import com.android.sdk.net.core.result.Result
 
-internal suspend fun <T> realCall(
-        call: suspend () -> Result<T>,
-        requireNonNullData: Boolean,
-        exceptionFactory: ExceptionFactory? = null
+internal suspend fun <T> apiCallInternal(
+    hostFlag: String,
+    requireNonNullData: Boolean,
+    call: suspend () -> Result<T>?
+): CallResult<T> {
+
+    val postAction = postAction(hostFlag)
+
+    var result = realCall(call, requireNonNullData, hostFlag)
+
+    if (result is CallResult.Error && postAction.retry(result.error)) {
+        result = realCall(call, requireNonNullData, hostFlag)
+    }
+
+    return result
+}
+
+private suspend fun <T> realCall(
+    call: suspend () -> Result<T>?,
+    requireNonNullData: Boolean,
+    hostFlag: String
 ): CallResult<T> {
 
     /* result must not be null. */
-    val result: Result<T>
+    val result: Result<T>?
 
     try {
         result = call.invoke()
     } catch (throwable: Throwable) {
-        return CallResult.Error(transformHttpException(throwable))
+        return CallResult.Error(transformHttpException(hostFlag, throwable))
+    }
+
+    if (result == null) {
+        throw ServerErrorException(ServerErrorException.SERVER_NULL_DATA)
     }
 
     val netContext = NetContext.get()
-    val hostFlag = NetContext.get().hostFlagHolder.getFlag(result.javaClass)
     val netProvider = netContext.hostConfigProvider(hostFlag)
 
     return if (!result.isSuccess) { //检测响应码是否正确
 
-        val apiHandler = netProvider.aipHandler()
-        apiHandler?.onApiError(result)
-        CallResult.Error(createApiException(result, exceptionFactory, hostFlag, netProvider))
+        netProvider.aipHandler()?.onApiError(result)
+        CallResult.Error(createApiException(result, hostFlag, netProvider))
 
     } else if (requireNonNullData) { //如果约定必须返回的数据却没有返回数据，则认为是服务器错误。
 

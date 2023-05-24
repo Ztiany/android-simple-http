@@ -3,25 +3,20 @@ package com.android.sdk.net.coroutines
 import com.android.sdk.net.HostConfigProvider
 import com.android.sdk.net.NetContext
 import com.android.sdk.net.core.exception.ApiErrorException
-import com.android.sdk.net.core.result.ExceptionFactory
 import com.android.sdk.net.core.result.Result
 import retrofit2.HttpException
-import timber.log.Timber
 
-internal const val RETRY_TIMES = 3
-internal const val RETRY_DELAY = 3000L
 
 internal fun createApiException(
     result: Result<*>,
-    exceptionFactory: ExceptionFactory? = null,
     hostFlag: String,
-    netProvider: HostConfigProvider
+    hostConfigProvider: HostConfigProvider
 ): Throwable {
 
-    var checkedExceptionFactory = exceptionFactory
+    var checkedExceptionFactory = hostConfigProvider.exceptionFactory()
 
     if (checkedExceptionFactory == null) {
-        checkedExceptionFactory = netProvider.exceptionFactory()
+        checkedExceptionFactory = hostConfigProvider.exceptionFactory()
     }
 
     if (checkedExceptionFactory != null) {
@@ -34,15 +29,8 @@ internal fun createApiException(
     return ApiErrorException(result.code, result.message, hostFlag)
 }
 
-internal fun retryPostAction(): CoroutinesResultPostProcessor {
-    val commonProvider = NetContext.get().commonProvider()
-    val coroutinesResultPostProcessor = commonProvider.coroutinesResultPostProcessor()
-
-    if (coroutinesResultPostProcessor != null) {
-        return coroutinesResultPostProcessor
-    }
-
-    return EMPTY_ENTRY
+internal fun postAction(hostFlag: String): CoroutinesResultPostProcessor {
+    return NetContext.get().hostConfigProvider(hostFlag).coroutinesResultPostProcessor() ?: EMPTY_ENTRY
 }
 
 private val EMPTY_ENTRY = object : CoroutinesResultPostProcessor {
@@ -51,19 +39,17 @@ private val EMPTY_ENTRY = object : CoroutinesResultPostProcessor {
     }
 }
 
-internal fun transformHttpException(throwable: Throwable): Throwable {
-    Timber.e(throwable, "transformHttpException")
-    val errorBodyHandler = NetContext.get().commonProvider().errorBodyHandler()
+internal fun transformHttpException(hostFlag: String, throwable: Throwable): Throwable {
+    val errorBodyHandler = NetContext.get().hostConfigProvider(hostFlag).errorBodyHandler()
 
     return if (errorBodyHandler != null && throwable is HttpException && throwable.code() < 500/*http status code*/) {
         val errorBody = throwable.response()?.errorBody()
         if (errorBody == null) {
             throwable
         } else {
-            errorBodyHandler.parseErrorBody(errorBody.string()) ?: throwable
+            errorBodyHandler.parseErrorBody(errorBody.string(), hostFlag) ?: throwable
         }
     } else {
         throwable
     }
 }
-

@@ -6,7 +6,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * https://gist.github.com/Piasy/fa507251da452d36b221
  * <p>
  * Marks an <i>AutoValue</i>/<i>AutoParcel</i>-annotated type for proper
  * Gson serialization.
@@ -14,6 +13,8 @@ import java.lang.annotation.Target;
  * This annotation is needed because the {@linkplain Retention retention} of
  * <i>AutoValue</i>/<i>AutoParcel</i>
  * does not allow reflection at runtime.
+ *
+ * @see AutoGenTypeAdapterFactory
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -25,6 +26,6 @@ public @interface AutoGson {
      *
      * @return the annotated class's real type.
      */
-    Class autoClass();
+    Class<?> autoClass();
 
 }

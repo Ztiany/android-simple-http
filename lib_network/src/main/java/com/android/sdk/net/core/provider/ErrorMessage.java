@@ -17,29 +17,28 @@ public interface ErrorMessage {
      */
     CharSequence serverDataErrorMessage(Throwable exception);
 
-
     /**
-     * 当服务器返回的实体数据是为 null 的提示消息。
+     * 当服务器返回的实体数据为 null 时的提示消息。
      */
-    CharSequence serverNullEntityErrorMessage(Throwable exception);
+    CharSequence serverReturningNullEntityErrorMessage(Throwable exception);
 
     /**
      * 服务器错误（code = 500-600）的提示消息。
      */
-    CharSequence serverErrorMessage(Throwable exception);
+    CharSequence serverInternalErrorMessage(Throwable exception);
 
     /**
-     * 客户端请求错误（code = 400-499）的提示消息
+     * 客户端请求错误（code = 400-499）的提示消息。
      */
     CharSequence clientRequestErrorMessage(Throwable exception);
 
     /**
-     * API 调用错误的提示消息
+     * API 调用错误的提示消息。
      */
     CharSequence apiErrorMessage(ApiErrorException exception);
 
     /**
-     * 未知错误的提示消息
+     * 未知错误的提示消息。
      */
     CharSequence unknownErrorMessage(Throwable exception);
 

@@ -1,6 +1,6 @@
 package com.android.sdk.net.rxjava2;
 
-import com.android.sdk.net.core.result.ExceptionFactory;
+import com.android.sdk.net.NetContext;
 import com.android.sdk.net.core.result.Result;
 import com.github.dmstocking.optional.java.util.Optional;
 
@@ -13,33 +13,33 @@ public class ResultHandlers {
 
     private static class ResultTransformer<Upstream, T extends Result<Upstream>> extends HttpResultTransformer<Upstream, Upstream, T> {
         ResultTransformer() {
-            super(true, Result::getData, null);
+            super(true, Result::getData, NetContext.DEFAULT_CONFIG);
         }
 
-        ResultTransformer(ExceptionFactory exceptionFactory) {
-            super(true, Result::getData, exceptionFactory);
+        ResultTransformer(String hostFlag) {
+            super(true, Result::getData, hostFlag);
         }
     }
 
     private static class OptionalResultTransformer<Upstream, T extends Result<Upstream>> extends HttpResultTransformer<Upstream, Optional<Upstream>, T> {
         OptionalResultTransformer() {
-            super(false, rResult -> Optional.ofNullable(rResult.getData()), null);
+            super(false, rResult -> Optional.ofNullable(rResult.getData()), NetContext.DEFAULT_CONFIG);
         }
 
-        OptionalResultTransformer(ExceptionFactory exceptionFactory) {
-            super(false, rResult -> Optional.ofNullable(rResult.getData()), exceptionFactory);
+        OptionalResultTransformer(String hostFlag) {
+            super(false, rResult -> Optional.ofNullable(rResult.getData()), hostFlag);
         }
     }
 
     private static class ResultChecker<Upstream, T extends Result<Upstream>> extends HttpResultTransformer<Upstream, T, T> {
         @SuppressWarnings("unchecked")
         ResultChecker() {
-            super(false, rResult -> (T) rResult, null);
+            super(false, rResult -> (T) rResult, NetContext.DEFAULT_CONFIG);
         }
 
         @SuppressWarnings("unchecked")
-        ResultChecker(ExceptionFactory exceptionFactory) {
-            super(false, rResult -> (T) rResult, exceptionFactory);
+        ResultChecker(String hostFlag) {
+            super(false, rResult -> (T) rResult, hostFlag);
         }
     }
 
@@ -86,24 +86,24 @@ public class ResultHandlers {
         return _resultChecker();
     }
 
-    private static <Upstream, T extends Result<Upstream>> HttpResultTransformer<Upstream, Upstream, T> _newExtractor(ExceptionFactory exceptionFactory) {
-        return new ResultTransformer<>(exceptionFactory);
+    private static <Upstream, T extends Result<Upstream>> HttpResultTransformer<Upstream, Upstream, T> _newExtractor(String hostFlag) {
+        return new ResultTransformer<>(hostFlag);
     }
 
-    public static <Upstream> HttpResultTransformer<Upstream, Upstream, Result<Upstream>> newExtractor(ExceptionFactory exceptionFactory) {
-        return _newExtractor(exceptionFactory);
+    public static <Upstream> HttpResultTransformer<Upstream, Upstream, Result<Upstream>> newExtractor(String hostFlag) {
+        return _newExtractor(hostFlag);
     }
 
-    private static <Upstream, T extends Result<Upstream>> HttpResultTransformer<Upstream, Optional<Upstream>, T> _newOptionalExtractor(ExceptionFactory exceptionFactory) {
-        return new OptionalResultTransformer<>(exceptionFactory);
+    private static <Upstream, T extends Result<Upstream>> HttpResultTransformer<Upstream, Optional<Upstream>, T> _newOptionalExtractor(String hostFlag) {
+        return new OptionalResultTransformer<>(hostFlag);
     }
 
-    public static <Upstream> HttpResultTransformer<Upstream, Optional<Upstream>, Result<Upstream>> newOptionalExtractor(ExceptionFactory exceptionFactory) {
-        return _newOptionalExtractor(exceptionFactory);
+    public static <Upstream> HttpResultTransformer<Upstream, Optional<Upstream>, Result<Upstream>> newOptionalExtractor(String hostFlag) {
+        return _newOptionalExtractor(hostFlag);
     }
 
-    private static <Upstream, T extends Result<Upstream>> HttpResultTransformer<Upstream, T, T> newResultChecker(ExceptionFactory exceptionFactory) {
-        return new ResultChecker<>(exceptionFactory);
+    public static <Upstream, T extends Result<Upstream>> HttpResultTransformer<Upstream, T, T> newResultChecker(String hostFlag) {
+        return new ResultChecker<>(hostFlag);
     }
 
 }

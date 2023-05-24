@@ -7,8 +7,6 @@ import retrofit2.Retrofit;
 
 /**
  * @author Ztiany
- * Email: ztiany3@gmail.com
- * Date : 2018-11-08 16:42
  */
 public interface HttpConfig {
 

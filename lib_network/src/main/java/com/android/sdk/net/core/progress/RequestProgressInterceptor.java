@@ -10,13 +10,14 @@ import okhttp3.Response;
 
 /**
  * @author Ztiany
- * Date : 2017-09-20 15:39
  */
 public class RequestProgressInterceptor implements Interceptor {
 
     private static final int DEFAULT_REFRESH_TIME = 150;
+
     private final UrlProgressListener mInterceptorProgressListener;
-    private int mRefreshTime = DEFAULT_REFRESH_TIME;//进度刷新时间(单位ms),避免高频率调用
+
+    private int mRefreshTime = DEFAULT_REFRESH_TIME;//进度刷新时间(单位 ms)，避免高频率调用
 
     public RequestProgressInterceptor(UrlProgressListener interceptorProgressListener) {
         mInterceptorProgressListener = interceptorProgressListener;
@@ -29,6 +30,7 @@ public class RequestProgressInterceptor implements Interceptor {
         mRefreshTime = refreshTime;
     }
 
+    @NonNull
     @Override
     public Response intercept(@NonNull Chain chain) throws IOException {
         return chain.proceed(wrapRequestBody(chain.request()));

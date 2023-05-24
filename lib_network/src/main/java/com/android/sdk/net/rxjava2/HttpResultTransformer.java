@@ -2,7 +2,6 @@ package com.android.sdk.net.rxjava2;
 
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.android.sdk.net.HostConfigProvider;
 import com.android.sdk.net.NetContext;
@@ -11,7 +10,7 @@ import com.android.sdk.net.core.exception.ServerErrorException;
 import com.android.sdk.net.core.provider.ApiHandler;
 import com.android.sdk.net.core.result.ExceptionFactory;
 import com.android.sdk.net.core.result.Result;
-import com.android.sdk.net.coroutines.CoroutinesSupportCommonKt;
+import com.android.sdk.net.coroutines.CommonInternalKt;
 
 import org.reactivestreams.Publisher;
 
@@ -23,25 +22,24 @@ import io.reactivex.ObservableTransformer;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
 import io.reactivex.SingleTransformer;
-import io.reactivex.functions.Function;
 
-public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstream>> implements ObservableTransformer<T, Downstream>, FlowableTransformer<T, Downstream>, SingleTransformer<T, Downstream> {
+public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstream>>
+        implements ObservableTransformer<T, Downstream>, FlowableTransformer<T, Downstream>, SingleTransformer<T, Downstream> {
 
     private final boolean mRequireNonNullData;
 
     private final DataExtractor<Downstream, Upstream> mDataExtractor;
 
-    @Nullable
-    private final ExceptionFactory mExceptionFactory;
+    private final String mHostFlag;
 
     public HttpResultTransformer(
             boolean requireNonNullData,
             @NonNull DataExtractor<Downstream, Upstream> dataExtractor,
-            @Nullable ExceptionFactory exceptionFactory
+            @NonNull String hostFlag
     ) {
         mRequireNonNullData = requireNonNullData;
         mDataExtractor = dataExtractor;
-        mExceptionFactory = exceptionFactory;
+        mHostFlag = hostFlag;
     }
 
     @NonNull
@@ -56,7 +54,7 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
 
         @SuppressWarnings("unchecked")
         RxResultPostTransformer<Downstream> rxResultPostTransformer =
-                (RxResultPostTransformer<Downstream>) NetContext.get().commonProvider().rxResultPostTransformer();
+                (RxResultPostTransformer<Downstream>) NetContext.get().hostConfigProvider(mHostFlag).rxResultPostTransformer();
 
         if (rxResultPostTransformer != null) {
             return downstreamFlowable.compose(rxResultPostTransformer);
@@ -77,7 +75,7 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
 
         @SuppressWarnings("unchecked")
         RxResultPostTransformer<Downstream> rxResultPostTransformer =
-                (RxResultPostTransformer<Downstream>) NetContext.get().commonProvider().rxResultPostTransformer();
+                (RxResultPostTransformer<Downstream>) NetContext.get().hostConfigProvider(mHostFlag).rxResultPostTransformer();
 
         if (rxResultPostTransformer != null) {
             return downstreamObservable.compose(rxResultPostTransformer);
@@ -96,7 +94,7 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
 
         @SuppressWarnings("unchecked")
         RxResultPostTransformer<Downstream> rxResultPostTransformer =
-                (RxResultPostTransformer<Downstream>) NetContext.get().commonProvider().rxResultPostTransformer();
+                (RxResultPostTransformer<Downstream>) NetContext.get().hostConfigProvider(mHostFlag).rxResultPostTransformer();
 
         if (rxResultPostTransformer != null) {
             return downstreamSingle.compose(rxResultPostTransformer);
@@ -109,16 +107,14 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
     private Downstream processData(Result<Upstream> rResult) {
 
         NetContext netContext = NetContext.get();
-        String flag = netContext.getHostFlagHolder().getFlag(rResult.getClass());
-        HostConfigProvider hostConfigProvider = netContext.hostConfigProvider(flag);
-
+        HostConfigProvider hostConfigProvider = netContext.hostConfigProvider(mHostFlag);
 
         if (!rResult.isSuccess()) {//检测响应码是否正确
             ApiHandler apiHandler = hostConfigProvider.aipHandler();
             if (apiHandler != null) {
                 apiHandler.onApiError(rResult);
             }
-            throwAs(createException(rResult, flag, hostConfigProvider));
+            throwAs(createException(rResult, mHostFlag, hostConfigProvider));
         }
 
         if (mRequireNonNullData) {
@@ -132,7 +128,7 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
     }
 
     private Throwable createException(@NonNull Result<Upstream> rResult, String flag, HostConfigProvider hostConfigProvider) {
-        ExceptionFactory exceptionFactory = mExceptionFactory;
+        ExceptionFactory exceptionFactory = NetContext.get().hostConfigProvider(flag).exceptionFactory();
 
         if (exceptionFactory == null) {
             exceptionFactory = hostConfigProvider.exceptionFactory();
@@ -148,13 +144,12 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
         return new ApiErrorException(rResult.getCode(), rResult.getMessage(), flag);
     }
 
-    @SuppressWarnings("unchecked")
     private <E extends Throwable> void throwAs(Throwable throwable) throws E {
         throw (E) throwable;
     }
 
     private Throwable transformError(Throwable throwable) {
-        return CoroutinesSupportCommonKt.transformHttpException(throwable);
+        return CommonInternalKt.transformHttpException(mHostFlag, throwable);
     }
 
 }

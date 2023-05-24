@@ -2,24 +2,22 @@ package com.android.sdk.net;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.android.sdk.net.core.provider.ApiHandler;
+import com.android.sdk.net.core.provider.ErrorBodyParser;
 import com.android.sdk.net.core.provider.HttpConfig;
 import com.android.sdk.net.core.result.ExceptionFactory;
-import com.android.sdk.net.core.result.Result;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.android.sdk.net.coroutines.CoroutinesResultPostProcessor;
+import com.android.sdk.net.rxjava2.RxResultPostTransformer;
 
 public class HostConfigBuilder {
 
-    private final HostConfigProviderImpl mNetProvider = new HostConfigProviderImpl();
+    private final HostConfigProviderImpl mConfigProvider = new HostConfigProviderImpl();
 
     private final NetContext mNetContext;
 
     private final String mFlag;
-
-    private List<Class<? extends Result<?>>> mResultTypeList;
 
     HostConfigBuilder(@NonNull String flag, @NonNull NetContext netContext) {
         mNetContext = netContext;
@@ -27,39 +25,45 @@ public class HostConfigBuilder {
     }
 
     public HostConfigBuilder aipHandler(@NonNull ApiHandler apiHandler) {
-        mNetProvider.mApiHandler = apiHandler;
+        mConfigProvider.mApiHandler = apiHandler;
         return this;
     }
 
     public HostConfigBuilder httpConfig(@NonNull HttpConfig httpConfig) {
-        mNetProvider.mHttpConfig = httpConfig;
+        mConfigProvider.mHttpConfig = httpConfig;
         return this;
     }
 
     public HostConfigBuilder exceptionFactory(@NonNull ExceptionFactory exceptionFactory) {
-        mNetProvider.mExceptionFactory = exceptionFactory;
+        mConfigProvider.mExceptionFactory = exceptionFactory;
         return this;
     }
 
-    public HostConfigBuilder registerResult(Class<? extends Result<?>> clazz) {
-        if (mResultTypeList == null) {
-            mResultTypeList = new ArrayList<>();
-        }
-        mResultTypeList.add(clazz);
+    public HostConfigBuilder errorBodyHandler(@NonNull ErrorBodyParser errorBodyParser) {
+        mConfigProvider.mErrorBodyParser = errorBodyParser;
+        return this;
+    }
+
+    /**
+     * You can use this to set up a piece of logic that will be executed before retrial.
+     */
+    public HostConfigBuilder coroutinesResultPostProcessor(@Nullable CoroutinesResultPostProcessor resultPostProcessor) {
+        mConfigProvider.mCoroutinesResultPostProcessor = resultPostProcessor;
+        return this;
+    }
+
+    /**
+     * If you use RxJava2, you can use this to set up a piece of logic that will be executed before retrial.
+     */
+    public HostConfigBuilder rx2ResultPostTransformer(@NonNull RxResultPostTransformer<?> resultPostProcessor) {
+        mConfigProvider.mRxResultPostTransformer = resultPostProcessor;
         return this;
     }
 
     @MainThread
     public NetContext setUp() {
-        mNetProvider.checkRequired();
-
-        if (mResultTypeList != null) {
-            for (Class<? extends Result<?>> aClass : mResultTypeList) {
-                mNetContext.getHostFlagHolder().registerType(aClass, mFlag);
-            }
-        }
-
-        mNetContext.addInto(mFlag, mNetProvider);
+        mConfigProvider.checkRequired();
+        mNetContext.addInto(mFlag, mConfigProvider);
         return mNetContext;
     }
 

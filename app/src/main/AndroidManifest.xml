@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="me.ztiany.simple.http.example">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application

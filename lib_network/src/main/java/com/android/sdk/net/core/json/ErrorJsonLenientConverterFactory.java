@@ -15,10 +15,9 @@ import retrofit2.Retrofit;
 import timber.log.Timber;
 
 /**
- * json 解析容错处理，<a href="http://blog.piasy.com/2016/09/04/RESTful-Android-Network-Solution-2/">参考</a>
+ * json 解析容错处理，参考 <a href="http://blog.piasy.com/2016/09/04/RESTful-Android-Network-Solution-2/">RESTful-Android-Network-Solution-2</a>。
  *
  * @author Ztiany
- * Date : 2018-08-13
  */
 public class ErrorJsonLenientConverterFactory extends Converter.Factory {
 

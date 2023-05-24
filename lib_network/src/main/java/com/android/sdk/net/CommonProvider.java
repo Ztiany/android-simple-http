@@ -14,15 +14,6 @@ public interface CommonProvider {
     @NonNull
     ErrorMessage errorMessage();
 
-    @Nullable
-    CoroutinesResultPostProcessor coroutinesResultPostProcessor();
-
-    @Nullable
-    RxResultPostTransformer<?> rxResultPostTransformer();
-
-    @Nullable
-    ErrorBodyParser errorBodyHandler();
-
     @NonNull
     PlatformInteractor platformInteractor();
 

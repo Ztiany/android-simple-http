@@ -6,14 +6,12 @@ import android.content.Context;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 
-import com.android.sdk.net.core.host.HostFlagHolder;
-import com.android.sdk.net.core.message.ErrorMessageFactory;
+import com.android.sdk.net.core.exception.ErrorMessageFactory;
 import com.android.sdk.net.core.service.ServiceFactory;
 import com.android.sdk.net.core.service.ServiceHelper;
 
-import java.lang.reflect.Type;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import okhttp3.OkHttpClient;
 
@@ -22,8 +20,19 @@ import okhttp3.OkHttpClient;
  */
 public class NetContext {
 
-    @SuppressLint("StaticFieldLeak")
-    private static volatile NetContext CONTEXT;
+    @SuppressLint("StaticFieldLeak") private static volatile NetContext CONTEXT;
+
+    private final Map<String, HostConfigProvider> mProviderMap = new ConcurrentHashMap<>();
+
+    public static final String DEFAULT_CONFIG = "default_host_config";
+
+    private final ServiceHelper mServiceHelper;
+
+    private Context mContext;
+
+    private CommonProvider mCommonProvider;
+
+    private final ErrorMessageFactory mErrorMessageFactory;
 
     public static NetContext get() {
         if (CONTEXT == null) {
@@ -36,20 +45,9 @@ public class NetContext {
         return CONTEXT;
     }
 
-    public static final String DEFAULT_FLAG = "DEFAULT_CONFIG";
-
-    private final ServiceHelper mServiceHelper;
-
-    private Context mContext;
-
-    private final HostFlagHolder mHostFlagHolder = new HostFlagHolder();
-
-    private final Map<String, HostConfigProvider> mProviderMap = new HashMap<>();
-
-    private CommonProvider mCommonProvider;
-
     private NetContext() {
         mServiceHelper = new ServiceHelper();
+        mErrorMessageFactory = new ErrorMessageFactoryImpl();
     }
 
     void initCommonProvider(CommonProvider commonProvider) {
@@ -63,17 +61,15 @@ public class NetContext {
     }
 
     @MainThread
-    public HostConfigBuilder newHostBuilder() {
-        return newHostBuilder(DEFAULT_FLAG);
-    }
-
-    @MainThread
     public HostConfigBuilder newHostBuilder(@NonNull String flag) {
         checkIfHasBeenInitialized();
         return new HostConfigBuilder(flag, this);
     }
 
     void addInto(String flag, @NonNull HostConfigProvider hostConfigProvider) {
+        if (mProviderMap.containsKey(flag)) {
+            throw new RuntimeException("The HostConfigProvider identified as " + flag + " has been initialized");
+        }
         mProviderMap.put(flag, hostConfigProvider);
     }
 
@@ -91,15 +87,8 @@ public class NetContext {
         return commonProvider().platformInteractor().isConnected();
     }
 
-    public HostConfigProvider hostConfigProvider() {
-        return hostConfigProvider(DEFAULT_FLAG);
-    }
-
-    public HostConfigProvider hostConfigProviderByResultType(Type type) {
-        return hostConfigProvider(getHostFlagHolder().getFlag(type));
-    }
-
-    public HostConfigProvider hostConfigProvider(String flag) {
+    @NonNull
+    public HostConfigProvider hostConfigProvider(@NonNull String flag) {
         HostConfigProvider hostConfigProvider = mProviderMap.get(flag);
 
         if (hostConfigProvider == null) {
@@ -110,18 +99,14 @@ public class NetContext {
     }
 
     public OkHttpClient httpClient() {
-        return httpClient(DEFAULT_FLAG);
+        return httpClient(DEFAULT_CONFIG);
     }
 
-    public OkHttpClient httpClient(String flag) {
+    public OkHttpClient httpClient(@NonNull String flag) {
         return mServiceHelper.getOkHttpClient(flag, hostConfigProvider(flag).httpConfig());
     }
 
-    public ServiceFactory serviceFactory() {
-        return serviceFactory(DEFAULT_FLAG);
-    }
-
-    public ServiceFactory serviceFactory(String flag) {
+    public ServiceFactory serviceFactory(@NonNull String flag) {
         return mServiceHelper.getServiceFactory(flag, hostConfigProvider(flag).httpConfig());
     }
 
@@ -129,12 +114,8 @@ public class NetContext {
         return mContext;
     }
 
-    public HostFlagHolder getHostFlagHolder() {
-        return mHostFlagHolder;
-    }
-
-    public CharSequence createMessage(Throwable exception) {
-        return ErrorMessageFactory.createMessage(exception);
+    public ErrorMessageFactory getErrorMessageFactory() {
+        return mErrorMessageFactory;
     }
 
 }
