@@ -27,7 +27,6 @@ private suspend fun <T> realCall(
     hostFlag: String
 ): CallResult<T> {
 
-    /* result must not be null. */
     val result: Result<T>?
 
     try {
@@ -36,6 +35,7 @@ private suspend fun <T> realCall(
         return CallResult.Error(transformHttpException(hostFlag, throwable))
     }
 
+    //TODO: 支持自定义处理
     if (result == null) {
         throw ServerErrorException(ServerErrorException.SERVER_NULL_DATA)
     }

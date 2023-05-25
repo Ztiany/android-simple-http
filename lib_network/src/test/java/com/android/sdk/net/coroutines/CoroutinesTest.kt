@@ -1,12 +1,11 @@
 package com.android.sdk.net.coroutines
 
-import com.android.sdk.net.SpecializedService
+import com.android.sdk.net.ServiceContext
 import com.android.sdk.net.core.result.Result
 import com.android.sdk.net.coroutines.nonnull.apiCall
 import com.android.sdk.net.coroutines.nonnull.executeApiCall
 import com.android.sdk.net.coroutines.nullable.apiCallNullable
 import com.android.sdk.net.coroutines.nullable.executeApiCallNullable
-import com.android.sdk.net.rxjava2.resultExtractor
 import io.reactivex.Single
 
 private class HttpResult<T>(override val data: T, override val code: Int, override val message: String) : Result<T> {
@@ -21,9 +20,9 @@ private data class User(val name: String)
 private interface TestAPI {
     suspend fun getData(): HttpResult<User>
 
-    suspend fun getDataRx(): Single<HttpResult<User>>
-
     suspend fun getDataNullable(): HttpResult<User?>
+
+    fun getDataRx(): Single<HttpResult<User>>
 }
 
 private suspend fun test1(testAPI: TestAPI) {
@@ -52,22 +51,23 @@ private suspend fun test1(testAPI: TestAPI) {
     }
 }
 
-private suspend fun test2(specializedService: SpecializedService<TestAPI>) {
-    specializedService.apiCall {
+private suspend fun test2(serviceContext: ServiceContext<TestAPI>) {
+    serviceContext.apiCall {
         getData()
     }
 }
 
-private suspend fun test3(specializedService: SpecializedService<TestAPI>) {
-    specializedService.service
-        .getDataRx()
-        .resultExtractor()
-        .subscribe(
-            {
+private fun test3(serviceContext: ServiceContext<TestAPI>) {
+    with(serviceContext) {
+        service.getDataRx()
+            .resultExtractor()
+            .subscribe(
+                {
 
-            },
-            {
+                },
+                {
 
-            }
-        )
+                }
+            )
+    }
 }

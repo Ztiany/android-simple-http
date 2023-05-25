@@ -4,12 +4,12 @@ import android.content.Context
 import com.android.sdk.net.CommonBuilder
 import com.android.sdk.net.HostConfigBuilder
 import com.android.sdk.net.NetContext
-import com.android.sdk.net.SpecializedService
+import com.android.sdk.net.ServiceContext
 import com.android.sdk.net.core.service.ServiceFactory
 
 inline fun <reified T> ServiceFactory.create(): T = create(T::class.java)
 
-inline fun <reified T> ServiceFactory.createSpecializedService(): SpecializedService<T> = createSpecializedService(T::class.java)
+inline fun <reified T> ServiceFactory.createServiceContext(): ServiceContext<T> = createServiceContext(T::class.java)
 
 fun NetContext.init(context: Context, init: CommonBuilder.() -> Unit): NetContext {
     val commonConfig = NetContext.get().newCommonConfig(context)

@@ -6,8 +6,8 @@ import com.android.sdk.net.core.progress.RequestProgressInterceptor
 import com.android.sdk.net.core.progress.ResponseProgressInterceptor
 import com.android.sdk.net.core.progress.UrlProgressListener
 import com.android.sdk.net.core.provider.HttpConfig
-import com.android.sdk.net.SpecializedService
-import com.android.sdk.net.SpecializedServiceImpl
+import com.android.sdk.net.ServiceContext
+import com.android.sdk.net.ServiceContextImpl
 import com.android.sdk.net.rxjava2.RxJavaChecker
 import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
@@ -69,16 +69,16 @@ class ServiceFactory internal constructor(
         return mRetrofit.create(clazz)
     }
 
-    fun <T> createSpecializedService(clazz: Class<T>): SpecializedService<T> {
-        return SpecializedServiceImpl(hostFlag, create(clazz))
+    fun <T> createServiceContext(clazz: Class<T>): ServiceContext<T> {
+        return ServiceContextImpl(hostFlag, create(clazz))
     }
 
-    fun <T> createSpecializedServiceWithUploadProgress(clazz: Class<T>, urlProgressListener: UrlProgressListener): SpecializedService<T> {
-        return SpecializedServiceImpl(hostFlag, createWithUploadProgress(clazz, urlProgressListener))
+    fun <T> createServiceContextWithUploadProgress(clazz: Class<T>, urlProgressListener: UrlProgressListener): ServiceContext<T> {
+        return ServiceContextImpl(hostFlag, createWithUploadProgress(clazz, urlProgressListener))
     }
 
-    fun <T> createSpecializedServiceWithDownloadProgress(clazz: Class<T>, urlProgressListener: UrlProgressListener): SpecializedService<T> {
-        return SpecializedServiceImpl(hostFlag, createWithDownloadProgress(clazz, urlProgressListener))
+    fun <T> createServiceContextWithDownloadProgress(clazz: Class<T>, urlProgressListener: UrlProgressListener): ServiceContext<T> {
+        return ServiceContextImpl(hostFlag, createWithDownloadProgress(clazz, urlProgressListener))
     }
 
 }

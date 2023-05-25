@@ -7,6 +7,7 @@ import timber.log.Timber
 
 suspend fun <T> apiCallNullable(
     hostFlag: String = NetContext.DEFAULT_CONFIG,
+    /**目前，retrofit 接口中的 suspend 方法不支持返回 T?，返回注诸如 204 之类响应将会导致 kotlin.KotlinNullPointerException: Response from xxx was null but response body type was declared as non-null KotlinNullPointerException 异常。*/
     call: suspend () -> Result<T?>?
 ): CallResult<T?> {
     return apiCallInternal(hostFlag, false, call)
@@ -15,6 +16,7 @@ suspend fun <T> apiCallNullable(
 suspend fun <T> apiCallRetryNullable(
     hostFlag: String = NetContext.DEFAULT_CONFIG,
     retryDeterminer: RetryDeterminer,
+    /**目前，retrofit 接口中的 suspend 方法不支持返回 T?，返回注诸如 204 之类响应将会导致 kotlin.KotlinNullPointerException: Response from xxx was null but response body type was declared as non-null KotlinNullPointerException 异常。*/
     call: suspend () -> Result<T?>?,
 ): CallResult<T?> {
 
@@ -34,6 +36,7 @@ suspend fun <T> apiCallRetryNullable(
 
 suspend fun <T> executeApiCallNullable(
     hostFlag: String = NetContext.DEFAULT_CONFIG,
+    /**目前，retrofit 接口中的 suspend 方法不支持返回 T?，返回注诸如 204 之类响应将会导致 kotlin.KotlinNullPointerException: Response from xxx was null but response body type was declared as non-null KotlinNullPointerException 异常。*/
     call: suspend () -> Result<T?>?
 ): T? {
     when (val result = apiCallNullable(hostFlag, call)) {
@@ -50,6 +53,7 @@ suspend fun <T> executeApiCallNullable(
 suspend fun <T> executeApiCallNullable(
     hostFlag: String = NetContext.DEFAULT_CONFIG,
     retryDeterminer: RetryDeterminer,
+    /**目前，retrofit 接口中的 suspend 方法不支持返回 T?，返回注诸如 204 之类响应将会导致 kotlin.KotlinNullPointerException: Response from xxx was null but response body type was declared as non-null KotlinNullPointerException 异常。*/
     call: suspend () -> Result<T?>?
 ): T? {
     when (val result = apiCallRetryNullable(hostFlag, retryDeterminer, call)) {
