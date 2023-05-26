@@ -112,7 +112,7 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
         if (!rResult.isSuccess()) {//检测响应码是否正确
             ApiHandler apiHandler = hostConfigProvider.aipHandler();
             if (apiHandler != null) {
-                apiHandler.onApiError(rResult);
+                apiHandler.onApiError(rResult, mHostFlag);
             }
             throwAs(createException(rResult, mHostFlag, hostConfigProvider));
         }

@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.annotation.StringRes
 import com.android.sdk.net.NetContext
 import com.android.sdk.net.extension.addHostConfig
+import com.android.sdk.net.extension.setDefaultHostConfig
 import com.android.sdk.net.extension.init
 import timber.log.Timber
 import kotlin.properties.Delegates
@@ -18,7 +19,7 @@ class App : Application() {
         NetContext.get().init(this) {
             errorMessage(newErrorMessage())
             platformInteractor(newPlatformInteractor())
-        }.addHostConfig {
+        }.setDefaultHostConfig {
             httpConfig(newHttpConfig())
             aipHandler(newApiHandler())
             errorBodyHandler(newErrorBodyParser())

@@ -9,6 +9,6 @@ import androidx.annotation.NonNull;
  */
 public interface ApiHandler {
 
-    void onApiError(@NonNull Result<?> result);
+    void onApiError(@NonNull Result<?> result, String hostFlag);
 
 }

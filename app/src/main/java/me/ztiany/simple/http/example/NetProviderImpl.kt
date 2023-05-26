@@ -177,7 +177,7 @@ internal fun newErrorMessage(): ErrorMessage {
     }
 }
 
-internal fun newApiHandler(): ApiHandler = ApiHandler { result ->
+internal fun newApiHandler(): ApiHandler = ApiHandler { result, hostFlag ->
     //登录状态已过期，请重新登录、账号在其他设备登陆
-    Timber.d("ApiHandler result: $result")
+    Timber.d("ApiHandler result: $result, hostFlag: $hostFlag")
 }

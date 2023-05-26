@@ -8,7 +8,7 @@ import com.android.sdk.net.NetContext
 import com.android.sdk.net.coroutines.onError
 import com.android.sdk.net.coroutines.onSuccess
 import com.android.sdk.net.extension.createServiceContext
-import com.android.sdk.net.extension.serviceFactory
+import com.android.sdk.net.extension.defaultServiceFactory
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -16,7 +16,7 @@ import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
 
-    private var serverContext = NetContext.get().serviceFactory().createServiceContext<ServerAPI>()
+    private var serverContext = NetContext.get().defaultServiceFactory().createServiceContext<ServerAPI>()
 
     private var serverContextMocked = NetContext.get().serviceFactory("Mock").createServiceContext<ServerAPI>()
 

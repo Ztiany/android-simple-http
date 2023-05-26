@@ -45,7 +45,7 @@ private suspend fun <T> realCall(
 
     return if (!result.isSuccess) { //检测响应码是否正确
 
-        netProvider.aipHandler()?.onApiError(result)
+        netProvider.aipHandler()?.onApiError(result, hostFlag)
         CallResult.Error(createApiException(result, hostFlag, netProvider))
 
     } else if (requireNonNullData) { //如果约定必须返回的数据却没有返回数据，则认为是服务器错误。

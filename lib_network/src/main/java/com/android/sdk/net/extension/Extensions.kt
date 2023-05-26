@@ -19,7 +19,7 @@ fun NetContext.init(context: Context, init: CommonBuilder.() -> Unit): NetContex
 }
 
 /** 添加以一个 host 配置，该配置的标识为 [NetContext.DEFAULT_CONFIG]。*/
-fun NetContext.addHostConfig(config: HostConfigBuilder.() -> Unit): NetContext {
+fun NetContext.setDefaultHostConfig(config: HostConfigBuilder.() -> Unit): NetContext {
     val builder = NetContext.get().newHostBuilder(NetContext.DEFAULT_CONFIG)
     config(builder)
     builder.setUp()
@@ -27,7 +27,7 @@ fun NetContext.addHostConfig(config: HostConfigBuilder.() -> Unit): NetContext {
 }
 
 /** 获取默认的 ServiceFactory（即配置标识为 [NetContext.DEFAULT_CONFIG]）。*/
-fun NetContext.serviceFactory(): ServiceFactory {
+fun NetContext.defaultServiceFactory(): ServiceFactory {
     return serviceFactory(NetContext.DEFAULT_CONFIG)
 }
 
