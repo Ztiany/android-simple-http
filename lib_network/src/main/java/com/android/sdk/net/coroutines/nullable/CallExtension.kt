@@ -5,19 +5,19 @@ import com.android.sdk.net.core.result.Result
 import com.android.sdk.net.coroutines.*
 import timber.log.Timber
 
-suspend fun <T> apiCallNullable(
+suspend fun <T : Any?> apiCallNullable(
     hostFlag: String = NetContext.DEFAULT_CONFIG,
     /**目前，retrofit 接口中的 suspend 方法不支持返回 T?，返回注诸如 204 之类响应将会导致 kotlin.KotlinNullPointerException: Response from xxx was null but response body type was declared as non-null KotlinNullPointerException 异常。*/
-    call: suspend () -> Result<T?>?
+    call: suspend () -> Result<T>?
 ): CallResult<T?> {
     return apiCallInternal(hostFlag, false, call)
 }
 
-suspend fun <T> apiCallRetryNullable(
+suspend fun <T : Any?> apiCallRetryNullable(
     hostFlag: String = NetContext.DEFAULT_CONFIG,
     retryDeterminer: RetryDeterminer,
     /**目前，retrofit 接口中的 suspend 方法不支持返回 T?，返回注诸如 204 之类响应将会导致 kotlin.KotlinNullPointerException: Response from xxx was null but response body type was declared as non-null KotlinNullPointerException 异常。*/
-    call: suspend () -> Result<T?>?,
+    call: suspend () -> Result<T>?,
 ): CallResult<T?> {
 
     var result = apiCallInternal(hostFlag, false, call)
@@ -34,10 +34,10 @@ suspend fun <T> apiCallRetryNullable(
     }
 }
 
-suspend fun <T> executeApiCallNullable(
+suspend fun <T : Any?> executeApiCallNullable(
     hostFlag: String = NetContext.DEFAULT_CONFIG,
     /**目前，retrofit 接口中的 suspend 方法不支持返回 T?，返回注诸如 204 之类响应将会导致 kotlin.KotlinNullPointerException: Response from xxx was null but response body type was declared as non-null KotlinNullPointerException 异常。*/
-    call: suspend () -> Result<T?>?
+    call: suspend () -> Result<T>?
 ): T? {
     when (val result = apiCallNullable(hostFlag, call)) {
         is CallResult.Success -> {
@@ -50,11 +50,11 @@ suspend fun <T> executeApiCallNullable(
     }
 }
 
-suspend fun <T> executeApiCallNullable(
+suspend fun <T : Any?> executeApiCallNullable(
     hostFlag: String = NetContext.DEFAULT_CONFIG,
     retryDeterminer: RetryDeterminer,
     /**目前，retrofit 接口中的 suspend 方法不支持返回 T?，返回注诸如 204 之类响应将会导致 kotlin.KotlinNullPointerException: Response from xxx was null but response body type was declared as non-null KotlinNullPointerException 异常。*/
-    call: suspend () -> Result<T?>?
+    call: suspend () -> Result<T>?
 ): T? {
     when (val result = apiCallRetryNullable(hostFlag, retryDeterminer, call)) {
         is CallResult.Success -> {

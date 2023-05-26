@@ -43,6 +43,22 @@ private suspend fun test1(testAPI: TestAPI) {
     }
 
     apiCallNullable {
+        testAPI.getData()
+    } onError {
+
+    } onSuccess {
+
+    }
+
+    apiCallNullable {
+        testAPI.getData()
+    } onError {
+
+    } onSuccess {
+
+    }
+
+    apiCallNullable {
         testAPI.getDataNullable()
     } onError {
 

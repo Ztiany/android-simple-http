@@ -30,13 +30,13 @@ internal class ServiceContextImpl<Service>(
         }
     }
 
-    override suspend fun <T> apiCallNullable(call: suspend Service.() -> Result<T?>?): CallResult<T?> {
+    override suspend fun <T : Any?> apiCallNullable(call: suspend Service.() -> Result<T>?): CallResult<T?> {
         return com.android.sdk.net.coroutines.nullable.apiCallNullable(hostFlag) {
             call(service)
         }
     }
 
-    override suspend fun <T> executeApiCallNullable(call: suspend Service.() -> Result<T?>?): T? {
+    override suspend fun <T : Any?> executeApiCallNullable(call: suspend Service.() -> Result<T>?): T? {
         return com.android.sdk.net.coroutines.nullable.executeApiCallNullable(hostFlag) {
             call(service)
         }
@@ -60,18 +60,18 @@ internal class ServiceContextImpl<Service>(
         }
     }
 
-    override suspend fun <T> apiCallRetryNullable(
+    override suspend fun <T : Any?> apiCallRetryNullable(
         retryDeterminer: RetryDeterminer,
-        call: suspend Service.() -> Result<T?>?
+        call: suspend Service.() -> Result<T>?
     ): CallResult<T?> {
         return com.android.sdk.net.coroutines.nullable.apiCallRetryNullable(hostFlag, retryDeterminer) {
             call(service)
         }
     }
 
-    override suspend fun <T> executeApiCallNullable(
+    override suspend fun <T : Any?> executeApiCallNullable(
         retryDeterminer: RetryDeterminer,
-        call: suspend Service.() -> Result<T?>?
+        call: suspend Service.() -> Result<T>?
     ): T? {
         return com.android.sdk.net.coroutines.nullable.executeApiCallNullable(hostFlag, retryDeterminer) {
             call(service)

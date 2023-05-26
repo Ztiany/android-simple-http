@@ -24,14 +24,14 @@ interface ServiceContext<Service> {
         call: suspend Service.() -> Result<T>
     ): T
 
-    suspend fun <T> apiCallNullable(
+    suspend fun <T : Any?> apiCallNullable(
         /**目前，retrofit 接口中的 suspend 方法不支持返回 T?，返回注诸如 204 之类响应将会导致 kotlin.KotlinNullPointerException: Response from xxx was null but response body type was declared as non-null KotlinNullPointerException 异常。*/
-        call: suspend Service.() -> Result<T?>?
+        call: suspend Service.() -> Result<T>?
     ): CallResult<T?>
 
-    suspend fun <T> executeApiCallNullable(
+    suspend fun <T : Any?> executeApiCallNullable(
         /**目前，retrofit 接口中的 suspend 方法不支持返回 T?，返回注诸如 204 之类响应将会导致 kotlin.KotlinNullPointerException: Response from xxx was null but response body type was declared as non-null KotlinNullPointerException 异常。*/
-        call: suspend Service.() -> Result<T?>?
+        call: suspend Service.() -> Result<T>?
     ): T?
 
     suspend fun <T : Any> apiCallRetry(
@@ -44,16 +44,16 @@ interface ServiceContext<Service> {
         call: suspend Service.() -> Result<T>
     ): T
 
-    suspend fun <T> apiCallRetryNullable(
+    suspend fun <T : Any?> apiCallRetryNullable(
         retryDeterminer: RetryDeterminer,
         /**目前，retrofit 接口中的 suspend 方法不支持返回 T?，返回注诸如 204 之类响应将会导致 kotlin.KotlinNullPointerException: Response from xxx was null but response body type was declared as non-null KotlinNullPointerException 异常。*/
-        call: suspend Service.() -> Result<T?>?
+        call: suspend Service.() -> Result<T>?
     ): CallResult<T?>
 
-    suspend fun <T> executeApiCallNullable(
+    suspend fun <T : Any?> executeApiCallNullable(
         retryDeterminer: RetryDeterminer,
         /**目前，retrofit 接口中的 suspend 方法不支持返回 T?，返回注诸如 204 之类响应将会导致 kotlin.KotlinNullPointerException: Response from xxx was null but response body type was declared as non-null KotlinNullPointerException 异常。*/
-        call: suspend Service.() -> Result<T?>?
+        call: suspend Service.() -> Result<T>?
     ): T?
 
     ///////////////////////////////////////////////////////////////////////////
