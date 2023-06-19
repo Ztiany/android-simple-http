@@ -1,3 +1,3 @@
 package com.android.sdk.net.coroutines
 
-typealias RetryDeterminer = (Int, Throwable) -> Boolean
+typealias RetryDeterminer = suspend (Int, Throwable) -> Boolean
