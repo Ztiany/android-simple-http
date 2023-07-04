@@ -7,7 +7,7 @@ import com.android.sdk.net.core.result.Result
 internal suspend fun <T> apiCallInternal(
     hostFlag: String,
     requireNonNullData: Boolean,
-    call: suspend () -> Result<T>?
+    call: suspend () -> Result<T>?,
 ): CallResult<T> {
 
     val postAction = postAction(hostFlag)
@@ -24,7 +24,7 @@ internal suspend fun <T> apiCallInternal(
 private suspend fun <T> realCall(
     call: suspend () -> Result<T>?,
     requireNonNullData: Boolean,
-    hostFlag: String
+    hostFlag: String,
 ): CallResult<T> {
 
     val result: Result<T>?

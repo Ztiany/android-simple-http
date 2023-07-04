@@ -6,6 +6,7 @@ import com.android.sdk.net.HostConfigBuilder
 import com.android.sdk.net.NetContext
 import com.android.sdk.net.ServiceContext
 import com.android.sdk.net.core.service.ServiceFactory
+import com.android.sdk.net.coroutines.CallResult
 
 inline fun <reified T> ServiceFactory.create(): T = create(T::class.java)
 
@@ -36,4 +37,11 @@ fun NetContext.addHostConfig(flag: String, config: HostConfigBuilder.() -> Unit)
     config(builder)
     builder.setUp()
     return this
+}
+
+inline fun <T, R> CallResult<T>.map(transform: (T) -> R): CallResult<R> {
+    return when (this) {
+        is CallResult.Success -> CallResult.Success(transform(data))
+        is CallResult.Error -> CallResult.Error(error)
+    }
 }

@@ -6,6 +6,7 @@ import com.android.sdk.net.coroutines.nonnull.apiCall
 import com.android.sdk.net.coroutines.nonnull.executeApiCall
 import com.android.sdk.net.coroutines.nullable.apiCallNullable
 import com.android.sdk.net.coroutines.nullable.executeApiCallNullable
+import com.android.sdk.net.extension.map
 import io.reactivex.Single
 
 private class HttpResult<T>(override val data: T, override val code: Int, override val message: String) : Result<T> {
@@ -42,8 +43,28 @@ private suspend fun test1(testAPI: TestAPI) {
 
     }
 
+    apiCall {
+        testAPI.getData()
+    }.map {
+        it.name
+    } onSuccess {
+
+    } onError {
+
+    }
+
     apiCallNullable {
         testAPI.getData()
+    } onError {
+
+    } onSuccess {
+
+    }
+
+    apiCallNullable {
+        testAPI.getData()
+    }.map {
+        it?.name
     } onError {
 
     } onSuccess {
