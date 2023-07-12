@@ -69,10 +69,6 @@ sealed class CallResult<out T> {
 
     class Error(val error: Throwable) : CallResult<Nothing>()
 
-    fun isSuccess() = this is Success
-
-    fun isError() = this is Error
-
     override fun toString(): String {
         return when (this) {
             is Success<*> -> "Success [data: $data]"

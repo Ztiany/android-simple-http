@@ -3,11 +3,12 @@ package com.android.sdk.net.coroutines.nonnull
 import com.android.sdk.net.NetContext
 import com.android.sdk.net.core.result.Result
 import com.android.sdk.net.coroutines.*
+import kotlinx.coroutines.CancellationException
 import timber.log.Timber
 
 suspend fun <T : Any> apiCall(
     hostFlag: String = NetContext.DEFAULT_CONFIG,
-    call: suspend () -> Result<T>
+    call: suspend () -> Result<T>,
 ): CallResult<T> {
     return apiCallInternal(hostFlag, true, call)
 }
@@ -32,9 +33,10 @@ suspend fun <T : Any> apiCallRetry(
     }
 }
 
+/** Notice: Catch [CancellationException] will cause coroutines unable to be cancelled. */
 suspend fun <T : Any> executeApiCall(
     hostFlag: String = NetContext.DEFAULT_CONFIG,
-    call: suspend () -> Result<T>
+    call: suspend () -> Result<T>,
 ): T {
 
     when (val result = apiCall(hostFlag, call)) {
@@ -48,10 +50,11 @@ suspend fun <T : Any> executeApiCall(
     }
 }
 
+/** Notice: Catch [CancellationException] will cause coroutines unable to be cancelled. */
 suspend fun <T : Any> executeApiCallRetry(
     hostFlag: String = NetContext.DEFAULT_CONFIG,
     retryDeterminer: RetryDeterminer,
-    call: suspend () -> Result<T>
+    call: suspend () -> Result<T>,
 ): T {
 
     when (val result = apiCallRetry(hostFlag, retryDeterminer, call)) {

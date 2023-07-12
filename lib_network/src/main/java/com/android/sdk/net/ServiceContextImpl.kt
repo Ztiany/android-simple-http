@@ -8,6 +8,7 @@ import com.github.dmstocking.optional.java.util.Optional
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
+import kotlinx.coroutines.CancellationException
 
 internal class ServiceContextImpl<Service>(
     val hostFlag: String,
@@ -24,6 +25,7 @@ internal class ServiceContextImpl<Service>(
         }
     }
 
+    /** Notice: Catch [CancellationException] will cause coroutines unable to be cancelled. */
     override suspend fun <T : Any> executeApiCall(call: suspend Service.() -> Result<T>): T {
         return com.android.sdk.net.coroutines.nonnull.executeApiCall(hostFlag) {
             call(service)
@@ -36,6 +38,7 @@ internal class ServiceContextImpl<Service>(
         }
     }
 
+    /** Notice: Catch [CancellationException] will cause coroutines unable to be cancelled. */
     override suspend fun <T : Any?> executeApiCallNullable(call: suspend Service.() -> Result<T>?): T? {
         return com.android.sdk.net.coroutines.nullable.executeApiCallNullable(hostFlag) {
             call(service)
@@ -51,6 +54,7 @@ internal class ServiceContextImpl<Service>(
         }
     }
 
+    /** Notice: Catch [CancellationException] will cause coroutines unable to be cancelled. */
     override suspend fun <T : Any> executeApiCallRetry(
         retryDeterminer: RetryDeterminer,
         call: suspend Service.() -> Result<T>
@@ -69,6 +73,7 @@ internal class ServiceContextImpl<Service>(
         }
     }
 
+    /** Notice: Catch [CancellationException] will cause coroutines unable to be cancelled. */
     override suspend fun <T : Any?> executeApiCallNullable(
         retryDeterminer: RetryDeterminer,
         call: suspend Service.() -> Result<T>?

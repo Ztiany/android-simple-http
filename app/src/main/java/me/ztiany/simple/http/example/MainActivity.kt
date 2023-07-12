@@ -9,10 +9,21 @@ import com.android.sdk.net.coroutines.onError
 import com.android.sdk.net.coroutines.onSuccess
 import com.android.sdk.net.extension.createServiceContext
 import com.android.sdk.net.extension.defaultServiceFactory
+import com.android.sdk.net.extension.onError
+import com.android.sdk.net.extension.tryCall
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
+
+private fun Throwable.rethrowIfCancellation() {
+    if (this is CancellationException) {
+        throw this
+    }
+}
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,43 +33,65 @@ class MainActivity : AppCompatActivity() {
 
     private val errorHandler = NetContext.get().errorMessageFactory
 
+    private var executingJob: Job? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         findViewById<View>(R.id.btn_execute_request).setOnClickListener {
-            executeRequest()
+            executingJob = executeRequest()
+            lifecycleScope.launch {
+                delay(200)
+                executingJob?.cancel()
+            }
         }
+
         findViewById<View>(R.id.btn_execute_request_nullable).setOnClickListener {
-            executeRequestNullable()
+            executingJob = executeRequestNullable()
+            lifecycleScope.launch {
+                delay(200)
+                executingJob?.cancel()
+            }
         }
+
         findViewById<View>(R.id.btn_get_result).setOnClickListener {
-            getResult()
+            executingJob = getResult()
+            lifecycleScope.launch {
+                delay(200)
+                executingJob?.cancel()
+            }
         }
+
         findViewById<View>(R.id.btn_get_result_nullable).setOnClickListener {
             getResultNullable()
         }
+
         findViewById<View>(R.id.btn_test_rx).setOnClickListener {
             rxRequest()
         }
+
         findViewById<View>(R.id.btn_test_mock).setOnClickListener {
             requestMock()
         }
     }
 
     private fun executeRequest() = lifecycleScope.launch(Dispatchers.IO) {
-        val data = try {
-            serverContext.executeApiCall { getList() }
-        } catch (e: Exception) {
-            Timber.d(errorHandler.createMessage(e).toString())
-            null
+        try {
+            val data = serverContext.executeApiCall { getList() }
+            Timber.d("data: $data")
+        } catch (e: Throwable) {
+            e.rethrowIfCancellation()
+            Timber.d("onError: $e")
         }
-        Timber.d("data: $data")
+        Timber.d("I am still alive.")
     }
 
     private fun executeRequestNullable() = lifecycleScope.launch(Dispatchers.IO) {
         val data = try {
             serverContext.executeApiCallNullable { getListNullable() }
         } catch (e: Exception) {
+            e.rethrowIfCancellation()
             Timber.d(errorHandler.createMessage(e).toString())
             null
         }
@@ -71,14 +104,17 @@ class MainActivity : AppCompatActivity() {
         } onError {
             Timber.d(errorHandler.createMessage(it).toString())
         }
+        Timber.d("I am still alive.")
     }
 
     private fun getResultNullable() = lifecycleScope.launch(Dispatchers.IO) {
-        serverContext.apiCallNullable { getListNullable() } onSuccess {
+        val callResult = serverContext.apiCallNullable { getListNullable() }
+        callResult onSuccess {
             Timber.d("data: $it")
         } onError {
             Timber.d(errorHandler.createMessage(it).toString())
         }
+        Timber.d("I am still alive.")
     }
 
     private fun requestMock() = lifecycleScope.launch(Dispatchers.IO) {

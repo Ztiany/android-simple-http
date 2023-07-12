@@ -48,7 +48,6 @@ inline fun <T, R> CallResult<T>.map(transform: (T) -> R): CallResult<R> {
     }
 }
 
-//-opt-in=kotlin.RequiresOptIn
 @OptIn(ExperimentalContracts::class)
 fun <T> CallResult<T>.isSuccess(): Boolean {
     contract {
