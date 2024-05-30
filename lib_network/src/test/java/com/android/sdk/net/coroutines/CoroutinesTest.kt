@@ -2,10 +2,10 @@ package com.android.sdk.net.coroutines
 
 import com.android.sdk.net.ServiceContext
 import com.android.sdk.net.core.result.Result
-import com.android.sdk.net.coroutines.nonnull.apiCall
-import com.android.sdk.net.coroutines.nonnull.executeApiCall
-import com.android.sdk.net.coroutines.nullable.apiCallNullable
-import com.android.sdk.net.coroutines.nullable.executeApiCallNullable
+import com.android.sdk.net.coroutines.nonnull.internalApiCall
+import com.android.sdk.net.coroutines.nonnull.internalExecuteApiCall
+import com.android.sdk.net.coroutines.nullable.internalApiCallNullable
+import com.android.sdk.net.coroutines.nullable.internalExecuteApiCallNullable
 import com.android.sdk.net.extension.map
 import io.reactivex.Single
 
@@ -27,15 +27,15 @@ private interface TestAPI {
 }
 
 private suspend fun test1(testAPI: TestAPI) {
-    val data1 = executeApiCall {
+    val data1 = internalExecuteApiCall {
         testAPI.getData()
     }
 
-    val data2 = executeApiCallNullable {
+    val data2 = internalExecuteApiCallNullable {
         testAPI.getDataNullable()
     }
 
-    apiCall {
+    internalApiCall {
         testAPI.getData()
     } onSuccess {
 
@@ -43,7 +43,7 @@ private suspend fun test1(testAPI: TestAPI) {
 
     }
 
-    apiCall {
+    internalApiCall {
         testAPI.getData()
     }.map {
         it.name
@@ -53,7 +53,7 @@ private suspend fun test1(testAPI: TestAPI) {
 
     }
 
-    apiCallNullable {
+    internalApiCallNullable {
         testAPI.getData()
     } onError {
 
@@ -61,7 +61,7 @@ private suspend fun test1(testAPI: TestAPI) {
 
     }
 
-    apiCallNullable {
+    internalApiCallNullable {
         testAPI.getData()
     }.map {
         it?.name
@@ -71,7 +71,7 @@ private suspend fun test1(testAPI: TestAPI) {
 
     }
 
-    apiCallNullable {
+    internalApiCallNullable {
         testAPI.getData()
     } onError {
 
@@ -79,7 +79,7 @@ private suspend fun test1(testAPI: TestAPI) {
 
     }
 
-    apiCallNullable {
+    internalApiCallNullable {
         testAPI.getDataNullable()
     } onError {
 

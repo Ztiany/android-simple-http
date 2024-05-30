@@ -10,7 +10,7 @@ import com.android.sdk.net.coroutines.CallResult
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
-inline fun <reified T> ServiceFactory.create(): T = create(T::class.java)
+inline fun <reified T> ServiceFactory.createDefault(): T = createDefault(T::class.java)
 
 inline fun <reified T> ServiceFactory.createServiceContext(): ServiceContext<T> = createServiceContext(T::class.java)
 

@@ -9,7 +9,7 @@ import com.github.dmstocking.optional.java.util.Optional;
  * 用于处理 Retrofit + RxJava2 网络请求返回的结果。
  */
 @SuppressWarnings("unused")
-public class ResultHandlers {
+class ResultHandlers {
 
     private static class ResultTransformer<Upstream, T extends Result<Upstream>> extends HttpResultTransformer<Upstream, Upstream, T> {
         ResultTransformer() {
@@ -50,7 +50,7 @@ public class ResultHandlers {
     private static final ResultChecker RESULT_CHECKER = new ResultChecker();
 
     /**
-     * 返回一个Transformer，用于统一处理网络请求返回的数据。
+     * 返回一个 Transformer，用于统一处理网络请求返回的数据。
      */
     @SuppressWarnings("unchecked")
     private static <Upstream, T extends Result<Upstream>> HttpResultTransformer<Upstream, Upstream, T> _resultExtractor() {
@@ -62,7 +62,7 @@ public class ResultHandlers {
     }
 
     /**
-     * 与{@link #resultExtractor()}的行为类似，但是最后把 HttpResult&lt;T&gt; 中的数据 T 用 {@link Optional} 包装后再转发到下游。
+     * 与 {@link #resultExtractor()} 的行为类似，但是最后把 HttpResult&lt;T&gt; 中的数据 T 用 {@link Optional} 包装后再转发到下游。
      * 适用于 HttpResult.getData() 可能为 null 的情况
      */
     @SuppressWarnings("unchecked")

@@ -3,7 +3,9 @@ package com.android.sdk.net
 import com.android.sdk.net.core.result.Result
 import com.android.sdk.net.coroutines.CallResult
 import com.android.sdk.net.coroutines.RetryDeterminer
-import com.android.sdk.net.rxjava2.ResultHandlers
+import com.android.sdk.net.rxjava2.internalOptionalExtractor
+import com.android.sdk.net.rxjava2.internalResultChecker
+import com.android.sdk.net.rxjava2.internalResultExtractor
 import com.github.dmstocking.optional.java.util.Optional
 import io.reactivex.Flowable
 import io.reactivex.Observable
@@ -12,7 +14,7 @@ import kotlinx.coroutines.CancellationException
 
 internal class ServiceContextImpl<Service>(
     val hostFlag: String,
-    override val service: Service
+    override val service: Service,
 ) : ServiceContext<Service> {
 
     ///////////////////////////////////////////////////////////////////////////
@@ -20,36 +22,36 @@ internal class ServiceContextImpl<Service>(
     ///////////////////////////////////////////////////////////////////////////
 
     override suspend fun <T : Any> apiCall(call: suspend Service.() -> Result<T>): CallResult<T> {
-        return com.android.sdk.net.coroutines.nonnull.apiCall(hostFlag) {
+        return com.android.sdk.net.coroutines.nonnull.internalApiCall(hostFlag) {
             call(service)
         }
     }
 
     /** Notice: Catch [CancellationException] will cause coroutines unable to be cancelled. */
     override suspend fun <T : Any> executeApiCall(call: suspend Service.() -> Result<T>): T {
-        return com.android.sdk.net.coroutines.nonnull.executeApiCall(hostFlag) {
+        return com.android.sdk.net.coroutines.nonnull.internalExecuteApiCall(hostFlag) {
             call(service)
         }
     }
 
     override suspend fun <T : Any?> apiCallNullable(call: suspend Service.() -> Result<T>?): CallResult<T?> {
-        return com.android.sdk.net.coroutines.nullable.apiCallNullable(hostFlag) {
+        return com.android.sdk.net.coroutines.nullable.internalApiCallNullable(hostFlag) {
             call(service)
         }
     }
 
     /** Notice: Catch [CancellationException] will cause coroutines unable to be cancelled. */
     override suspend fun <T : Any?> executeApiCallNullable(call: suspend Service.() -> Result<T>?): T? {
-        return com.android.sdk.net.coroutines.nullable.executeApiCallNullable(hostFlag) {
+        return com.android.sdk.net.coroutines.nullable.internalExecuteApiCallNullable(hostFlag) {
             call(service)
         }
     }
 
     override suspend fun <T : Any> apiCallRetry(
         retryDeterminer: RetryDeterminer,
-        call: suspend Service.() -> Result<T>
+        call: suspend Service.() -> Result<T>,
     ): CallResult<T> {
-        return com.android.sdk.net.coroutines.nonnull.apiCallRetry(hostFlag, retryDeterminer) {
+        return com.android.sdk.net.coroutines.nonnull.internalApiCallRetry(hostFlag, retryDeterminer) {
             call(service)
         }
     }
@@ -57,18 +59,18 @@ internal class ServiceContextImpl<Service>(
     /** Notice: Catch [CancellationException] will cause coroutines unable to be cancelled. */
     override suspend fun <T : Any> executeApiCallRetry(
         retryDeterminer: RetryDeterminer,
-        call: suspend Service.() -> Result<T>
+        call: suspend Service.() -> Result<T>,
     ): T {
-        return com.android.sdk.net.coroutines.nonnull.executeApiCallRetry(hostFlag, retryDeterminer) {
+        return com.android.sdk.net.coroutines.nonnull.internalExecuteApiCallRetry(hostFlag, retryDeterminer) {
             call(service)
         }
     }
 
     override suspend fun <T : Any?> apiCallRetryNullable(
         retryDeterminer: RetryDeterminer,
-        call: suspend Service.() -> Result<T>?
+        call: suspend Service.() -> Result<T>?,
     ): CallResult<T?> {
-        return com.android.sdk.net.coroutines.nullable.apiCallRetryNullable(hostFlag, retryDeterminer) {
+        return com.android.sdk.net.coroutines.nullable.internalApiCallRetryNullable(hostFlag, retryDeterminer) {
             call(service)
         }
     }
@@ -76,9 +78,9 @@ internal class ServiceContextImpl<Service>(
     /** Notice: Catch [CancellationException] will cause coroutines unable to be cancelled. */
     override suspend fun <T : Any?> executeApiCallNullable(
         retryDeterminer: RetryDeterminer,
-        call: suspend Service.() -> Result<T>?
+        call: suspend Service.() -> Result<T>?,
     ): T? {
-        return com.android.sdk.net.coroutines.nullable.executeApiCallNullable(hostFlag, retryDeterminer) {
+        return com.android.sdk.net.coroutines.nullable.internalExecuteApiCallNullable(hostFlag, retryDeterminer) {
             call(service)
         }
     }
@@ -88,39 +90,39 @@ internal class ServiceContextImpl<Service>(
     ///////////////////////////////////////////////////////////////////////////
 
     override fun <T : Result<E>, E> Observable<T>.optionalExtractor(): Observable<Optional<E>> {
-        return this.compose(ResultHandlers.newOptionalExtractor(hostFlag))
+        return this.internalOptionalExtractor(hostFlag)
     }
 
     override fun <T : Result<E>, E> Observable<T>.resultExtractor(): Observable<E> {
-        return this.compose(ResultHandlers.newExtractor(hostFlag))
+        return this.internalResultExtractor(hostFlag)
     }
 
     override fun <E, T : Result<E>> Observable<T>.resultChecker(): Observable<Result<E>> {
-        return (this.compose(ResultHandlers.newResultChecker(hostFlag)))
+        return this.internalResultChecker(hostFlag)
     }
 
     override fun <T : Result<E>, E> Flowable<T>.optionalExtractor(): Flowable<Optional<E>> {
-        return this.compose(ResultHandlers.newOptionalExtractor(hostFlag))
+        return this.internalOptionalExtractor(hostFlag)
     }
 
     override fun <T : Result<E>, E> Flowable<T>.resultExtractor(): Flowable<E> {
-        return this.compose(ResultHandlers.newExtractor(hostFlag))
+        return this.internalResultExtractor(hostFlag)
     }
 
     override fun <E, T : Result<E>> Flowable<T>.resultChecker(): Flowable<Result<E>> {
-        return (this.compose(ResultHandlers.newResultChecker(hostFlag)))
+        return this.internalResultChecker(hostFlag)
     }
 
     override fun <T : Result<E>, E> Single<T>.optionalExtractor(): Single<Optional<E>> {
-        return this.compose(ResultHandlers.newOptionalExtractor(hostFlag))
+        return this.internalOptionalExtractor(hostFlag)
     }
 
     override fun <T : Result<E>, E> Single<T>.resultExtractor(): Single<E> {
-        return this.compose(ResultHandlers.newExtractor(hostFlag))
+        return this.internalResultExtractor(hostFlag)
     }
 
     override fun <E, T : Result<E>> Single<T>.resultChecker(): Single<Result<E>> {
-        return (this.compose(ResultHandlers.newResultChecker(hostFlag)))
+        return this.internalResultChecker(hostFlag)
     }
 
 }

@@ -2,22 +2,21 @@ package com.android.sdk.net.coroutines.nullable
 
 import com.android.sdk.net.NetContext
 import com.android.sdk.net.core.result.Result
-import com.android.sdk.net.coroutines.*
-import kotlinx.coroutines.CancellationException
+import com.android.sdk.net.coroutines.CallResult
+import com.android.sdk.net.coroutines.RetryDeterminer
+import com.android.sdk.net.coroutines.apiCallInternal
 import timber.log.Timber
 
-suspend fun <T : Any?> apiCallNullable(
+internal suspend fun <T : Any?> internalApiCallNullable(
     hostFlag: String = NetContext.DEFAULT_CONFIG,
-    /**目前，retrofit 接口中的 suspend 方法不支持返回 T?，返回注诸如 204 之类响应将会导致 kotlin.KotlinNullPointerException: Response from xxx was null but response body type was declared as non-null KotlinNullPointerException 异常。*/
     call: suspend () -> Result<T>?,
 ): CallResult<T?> {
     return apiCallInternal(hostFlag, false, call)
 }
 
-suspend fun <T : Any?> apiCallRetryNullable(
+internal suspend fun <T : Any?> internalApiCallRetryNullable(
     hostFlag: String = NetContext.DEFAULT_CONFIG,
     retryDeterminer: RetryDeterminer,
-    /**目前，retrofit 接口中的 suspend 方法不支持返回 T?，返回注诸如 204 之类响应将会导致 kotlin.KotlinNullPointerException: Response from xxx was null but response body type was declared as non-null KotlinNullPointerException 异常。*/
     call: suspend () -> Result<T>?,
 ): CallResult<T?> {
 
@@ -35,13 +34,11 @@ suspend fun <T : Any?> apiCallRetryNullable(
     }
 }
 
-/** Notice: Catch [CancellationException] will cause coroutines unable to be cancelled. */
-suspend fun <T : Any?> executeApiCallNullable(
+internal suspend fun <T : Any?> internalExecuteApiCallNullable(
     hostFlag: String = NetContext.DEFAULT_CONFIG,
-    /**目前，retrofit 接口中的 suspend 方法不支持返回 T?，返回注诸如 204 之类响应将会导致 kotlin.KotlinNullPointerException: Response from xxx was null but response body type was declared as non-null KotlinNullPointerException 异常。*/
     call: suspend () -> Result<T>?,
 ): T? {
-    when (val result = apiCallNullable(hostFlag, call)) {
+    when (val result = internalApiCallNullable(hostFlag, call)) {
         is CallResult.Success -> {
             return result.data
         }
@@ -52,14 +49,12 @@ suspend fun <T : Any?> executeApiCallNullable(
     }
 }
 
-/** Notice: Catch [CancellationException] will cause coroutines unable to be cancelled. */
-suspend fun <T : Any?> executeApiCallNullable(
+internal suspend fun <T : Any?> internalExecuteApiCallNullable(
     hostFlag: String = NetContext.DEFAULT_CONFIG,
     retryDeterminer: RetryDeterminer,
-    /**目前，retrofit 接口中的 suspend 方法不支持返回 T?，返回注诸如 204 之类响应将会导致 kotlin.KotlinNullPointerException: Response from xxx was null but response body type was declared as non-null KotlinNullPointerException 异常。*/
     call: suspend () -> Result<T>?,
 ): T? {
-    when (val result = apiCallRetryNullable(hostFlag, retryDeterminer, call)) {
+    when (val result = internalApiCallRetryNullable(hostFlag, retryDeterminer, call)) {
         is CallResult.Success -> {
             return result.data
         }

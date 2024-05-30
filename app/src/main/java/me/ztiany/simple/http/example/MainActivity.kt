@@ -5,31 +5,30 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.android.sdk.net.NetContext
+import com.android.sdk.net.coroutines.apiCall
+import com.android.sdk.net.coroutines.apiCallNullable
+import com.android.sdk.net.coroutines.executeApiCall
+import com.android.sdk.net.coroutines.executeApiCallNullable
 import com.android.sdk.net.coroutines.onError
 import com.android.sdk.net.coroutines.onSuccess
+import com.android.sdk.net.extension.createDefault
 import com.android.sdk.net.extension.createServiceContext
 import com.android.sdk.net.extension.defaultServiceFactory
-import com.android.sdk.net.extension.onError
-import com.android.sdk.net.extension.tryCall
+import com.android.sdk.net.rxjava2.resultExtractor
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-private fun Throwable.rethrowIfCancellation() {
-    if (this is CancellationException) {
-        throw this
-    }
-}
 
 class MainActivity : AppCompatActivity() {
 
-    private var serverContext = NetContext.get().defaultServiceFactory().createServiceContext<ServerAPI>()
+    private var serverApi = NetContext.get().defaultServiceFactory().createDefault<ServerAPI>()
 
-    private var serverContextMocked = NetContext.get().serviceFactory("Mock").createServiceContext<ServerAPI>()
+    private var serverContext = NetContext.get().serviceFactory("Mock").createServiceContext<ServerAPI>()
 
     private val errorHandler = NetContext.get().errorMessageFactory
 
@@ -38,11 +37,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         findViewById<View>(R.id.btn_execute_request).setOnClickListener {
             executingJob = executeRequest()
             lifecycleScope.launch {
-                delay(200)
+                delay(2000)
                 executingJob?.cancel()
             }
         }
@@ -78,10 +76,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun executeRequest() = lifecycleScope.launch(Dispatchers.IO) {
         try {
-            val data = serverContext.executeApiCall { getList() }
+            val data = executeApiCall { serverApi.getList() }
             Timber.d("data: $data")
         } catch (e: Throwable) {
-            e.rethrowIfCancellation()
+            ensureActive()
             Timber.d("onError: $e")
         }
         Timber.d("I am still alive.")
@@ -89,9 +87,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun executeRequestNullable() = lifecycleScope.launch(Dispatchers.IO) {
         val data = try {
-            serverContext.executeApiCallNullable { getListNullable() }
+            executeApiCallNullable { serverApi.getListNullable() }
         } catch (e: Exception) {
-            e.rethrowIfCancellation()
+            ensureActive()
             Timber.d(errorHandler.createMessage(e).toString())
             null
         }
@@ -99,7 +97,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getResult() = lifecycleScope.launch(Dispatchers.IO) {
-        serverContext.apiCall { getList() } onSuccess {
+        apiCall { serverApi.getList() } onSuccess {
             Timber.d("data: $it")
         } onError {
             Timber.d(errorHandler.createMessage(it).toString())
@@ -108,7 +106,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getResultNullable() = lifecycleScope.launch(Dispatchers.IO) {
-        val callResult = serverContext.apiCallNullable { getListNullable() }
+        val callResult = apiCallNullable { serverApi.getListNullable() }
         callResult onSuccess {
             Timber.d("data: $it")
         } onError {
@@ -118,7 +116,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun requestMock() = lifecycleScope.launch(Dispatchers.IO) {
-        serverContextMocked.apiCallNullable { getListAllNullable() } onSuccess {
+        serverContext.apiCallNullable { getListAllNullable() } onSuccess {
             Timber.d("apiCallNullable data: $it")
         } onError {
             Timber.e(it, "apiCallNullable")
@@ -126,8 +124,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun rxRequest() = with(serverContext) {
-        service.getRxList()
+    private fun rxRequest() = with(serverApi) {
+        getRxList()
             .subscribeOn(Schedulers.io())
             .resultExtractor()
             .subscribe(

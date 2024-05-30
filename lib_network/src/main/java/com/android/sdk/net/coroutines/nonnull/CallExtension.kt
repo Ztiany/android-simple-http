@@ -3,17 +3,16 @@ package com.android.sdk.net.coroutines.nonnull
 import com.android.sdk.net.NetContext
 import com.android.sdk.net.core.result.Result
 import com.android.sdk.net.coroutines.*
-import kotlinx.coroutines.CancellationException
 import timber.log.Timber
 
-suspend fun <T : Any> apiCall(
+internal suspend fun <T : Any> internalApiCall(
     hostFlag: String = NetContext.DEFAULT_CONFIG,
     call: suspend () -> Result<T>,
 ): CallResult<T> {
     return apiCallInternal(hostFlag, true, call)
 }
 
-suspend fun <T : Any> apiCallRetry(
+internal suspend fun <T : Any> internalApiCallRetry(
     hostFlag: String = NetContext.DEFAULT_CONFIG,
     retryDeterminer: RetryDeterminer,
     call: suspend () -> Result<T>,
@@ -33,13 +32,12 @@ suspend fun <T : Any> apiCallRetry(
     }
 }
 
-/** Notice: Catch [CancellationException] will cause coroutines unable to be cancelled. */
-suspend fun <T : Any> executeApiCall(
+internal suspend fun <T : Any> internalExecuteApiCall(
     hostFlag: String = NetContext.DEFAULT_CONFIG,
     call: suspend () -> Result<T>,
 ): T {
 
-    when (val result = apiCall(hostFlag, call)) {
+    when (val result = internalApiCall(hostFlag, call)) {
         is CallResult.Success -> {
             return result.data
         }
@@ -50,14 +48,13 @@ suspend fun <T : Any> executeApiCall(
     }
 }
 
-/** Notice: Catch [CancellationException] will cause coroutines unable to be cancelled. */
-suspend fun <T : Any> executeApiCallRetry(
+internal suspend fun <T : Any> internalExecuteApiCallRetry(
     hostFlag: String = NetContext.DEFAULT_CONFIG,
     retryDeterminer: RetryDeterminer,
     call: suspend () -> Result<T>,
 ): T {
 
-    when (val result = apiCallRetry(hostFlag, retryDeterminer, call)) {
+    when (val result = internalApiCallRetry(hostFlag, retryDeterminer, call)) {
         is CallResult.Success -> {
             return result.data
         }
