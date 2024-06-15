@@ -2,12 +2,14 @@ package com.android.sdk.net.coroutines
 
 import com.android.sdk.net.ServiceContext
 import com.android.sdk.net.core.result.Result
-import com.android.sdk.net.coroutines.nonnull.internalApiCall
-import com.android.sdk.net.coroutines.nonnull.internalExecuteApiCall
-import com.android.sdk.net.coroutines.nullable.internalApiCallNullable
-import com.android.sdk.net.coroutines.nullable.internalExecuteApiCallNullable
+import com.android.sdk.net.extension.coroutineMap
 import com.android.sdk.net.extension.map
+import com.android.sdk.net.extension.switchMap
+import com.android.sdk.net.extension.zip
 import io.reactivex.Single
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 
 private class HttpResult<T>(override val data: T, override val code: Int, override val message: String) : Result<T> {
 
@@ -18,33 +20,47 @@ private class HttpResult<T>(override val data: T, override val code: Int, overri
 
 private data class User(val name: String)
 
+private data class Friend(val name: String)
+
+private data class Profile(val avatar: String)
+
+private data class Address(val addressDetail: String)
+
 private interface TestAPI {
-    suspend fun getData(): HttpResult<User>
+    suspend fun getUser(): HttpResult<User>
 
-    suspend fun getDataNullable(): HttpResult<User?>
+    suspend fun getFriend(): HttpResult<Friend>
 
-    fun getDataRx(): Single<HttpResult<User>>
+    suspend fun getUserProfile(user: User): HttpResult<Profile>
+
+    suspend fun getUserAddress(user: User): HttpResult<Address>
+
+    suspend fun getUserNullable(): HttpResult<User?>
+
+    fun getUserRx(): Single<HttpResult<User>>
 }
 
-private suspend fun test1(testAPI: TestAPI) {
-    val data1 = internalExecuteApiCall {
-        testAPI.getData()
+private suspend fun testExecuteApiCall(testAPI: TestAPI) {
+    val data1 = executeApiCall {
+        testAPI.getUser()
     }
 
-    val data2 = internalExecuteApiCallNullable {
-        testAPI.getDataNullable()
+    val data2 = executeApiCallNullable {
+        testAPI.getUserNullable()
     }
+}
 
-    internalApiCall {
-        testAPI.getData()
+private suspend fun testCallResult(testAPI: TestAPI) {
+    apiCall {
+        testAPI.getUser()
     } onSuccess {
 
     } onError {
 
     }
 
-    internalApiCall {
-        testAPI.getData()
+    apiCall {
+        testAPI.getUser()
     }.map {
         it.name
     } onSuccess {
@@ -53,16 +69,8 @@ private suspend fun test1(testAPI: TestAPI) {
 
     }
 
-    internalApiCallNullable {
-        testAPI.getData()
-    } onError {
-
-    } onSuccess {
-
-    }
-
-    internalApiCallNullable {
-        testAPI.getData()
+    apiCallNullable {
+        testAPI.getUserNullable()
     }.map {
         it?.name
     } onError {
@@ -71,32 +79,48 @@ private suspend fun test1(testAPI: TestAPI) {
 
     }
 
-    internalApiCallNullable {
-        testAPI.getData()
-    } onError {
-
+    apiCall {
+        testAPI.getUser()
+    }.switchMap {
+        apiCall { testAPI.getUserProfile(it) }
     } onSuccess {
+
+    } onError {
 
     }
 
-    internalApiCallNullable {
-        testAPI.getDataNullable()
+    apiCall {
+        testAPI.getUser()
+    }.zip(apiCall { testAPI.getFriend() }) { user, friend ->
+        user.name to friend.name
+    } onSuccess {
+
     } onError {
 
+    }
+
+    apiCall {
+        testAPI.getUser()
+    }.coroutineMap {
+        val profile = async(Dispatchers.IO) { apiCall { testAPI.getUserProfile(it) }.bind() }
+        val address = async(Dispatchers.IO) { apiCall { testAPI.getUserAddress(it) }.bind() }
+        profile.await() to address.await()
     } onSuccess {
+
+    } onError {
 
     }
 }
 
-private suspend fun test2(serviceContext: ServiceContext<TestAPI>) {
+private suspend fun testServiceContext(serviceContext: ServiceContext<TestAPI>) {
     serviceContext.apiCall {
-        getData()
+        getUser()
     }
 }
 
-private fun test3(serviceContext: ServiceContext<TestAPI>) {
+private fun testRxJava(serviceContext: ServiceContext<TestAPI>) {
     with(serviceContext) {
-        service.getDataRx()
+        service.getUserRx()
             .resultExtractor()
             .subscribe(
                 {

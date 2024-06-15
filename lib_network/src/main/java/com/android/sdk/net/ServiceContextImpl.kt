@@ -47,7 +47,7 @@ internal class ServiceContextImpl<Service>(
         }
     }
 
-    override suspend fun <T : Any> apiCallRetry(
+    override suspend fun <T : Any> apiCall(
         retryDeterminer: RetryDeterminer,
         call: suspend Service.() -> Result<T>,
     ): CallResult<T> {
@@ -57,7 +57,7 @@ internal class ServiceContextImpl<Service>(
     }
 
     /** Notice: Catch [CancellationException] will cause coroutines unable to be cancelled. */
-    override suspend fun <T : Any> executeApiCallRetry(
+    override suspend fun <T : Any> executeApiCall(
         retryDeterminer: RetryDeterminer,
         call: suspend Service.() -> Result<T>,
     ): T {
@@ -66,7 +66,7 @@ internal class ServiceContextImpl<Service>(
         }
     }
 
-    override suspend fun <T : Any?> apiCallRetryNullable(
+    override suspend fun <T : Any?> apiCallNullable(
         retryDeterminer: RetryDeterminer,
         call: suspend Service.() -> Result<T>?,
     ): CallResult<T?> {

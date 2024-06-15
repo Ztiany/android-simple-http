@@ -7,7 +7,9 @@ import com.android.sdk.net.NetContext
 import com.android.sdk.net.ServiceContext
 import com.android.sdk.net.core.service.ServiceFactory
 import com.android.sdk.net.coroutines.CallResult
+import timber.log.Timber
 import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
 inline fun <reified T> ServiceFactory.createDefault(): T = createDefault(T::class.java)
@@ -39,29 +41,4 @@ fun NetContext.addHostConfig(flag: String, config: HostConfigBuilder.() -> Unit)
     config(builder)
     builder.setUp()
     return this
-}
-
-inline fun <T, R> CallResult<T>.map(transform: (T) -> R): CallResult<R> {
-    return when (this) {
-        is CallResult.Success -> CallResult.Success(transform(data))
-        is CallResult.Error -> CallResult.Error(error)
-    }
-}
-
-@OptIn(ExperimentalContracts::class)
-fun <T> CallResult<T>.isSuccess(): Boolean {
-    contract {
-        returns(true) implies (this@isSuccess is CallResult.Success)
-        returns(false) implies (this@isSuccess is CallResult.Error)
-    }
-    return this is CallResult.Success
-}
-
-@OptIn(ExperimentalContracts::class)
-fun <T> CallResult<T>.isError(): Boolean {
-    contract {
-        returns(true) implies (this@isError is CallResult.Error)
-        returns(false) implies (this@isError is CallResult.Success)
-    }
-    return this is CallResult.Error
 }

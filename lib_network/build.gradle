@@ -1,18 +1,15 @@
 plugins {
     id "com.android.library"
     id "kotlin-android"
+    id 'maven-publish'
 }
 
-apply plugin: "com.vanniktech.maven.publish"
-
 android {
-    compileSdkVersion 31
+    compileSdk 34
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 31
-        versionCode 116
-        versionName "1.1.6"
+        targetSdkVersion 34
     }
 
     lintOptions {
@@ -50,6 +47,24 @@ dependencies {
     compileOnly "com.github.dmstocking:support-optional:1.2"
 
     testImplementation "io.reactivex.rxjava2:rxjava:2.2.21"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.0"
     testImplementation "com.squareup.retrofit2:adapter-rxjava2:2.9.0"
     testImplementation "com.github.dmstocking:support-optional:1.2"
+}
+
+group = 'io.github.ztiany'
+version = '1.0'
+
+afterEvaluate {
+    publishing {
+        publications {
+            // Creates a Maven publication called "release".
+            release(MavenPublication) {
+                from components.release
+                groupId = 'io.github.ztiany'
+                artifactId = 'android-simple-http'
+                version = '1.2.1'
+            }
+        }
+    }
 }
