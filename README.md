@@ -11,6 +11,5 @@ check out examples in the app module.
 ## 3 Installation
 
 ```groovy
-// https://mvnrepository.com/artifact/io.github.ztiany/android-simple-http
-implementation 'io.github.ztiany:android-simple-http:1.2.0'
+implementation "com.github.Ztiany:android-simple-http:1.2.2"
 ```
