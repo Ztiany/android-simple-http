@@ -5,7 +5,8 @@ import io.reactivex.ObservableTransformer;
 import io.reactivex.SingleTransformer;
 
 /**
- * 经过 {@link ResultHandlers} 处理网络结果后，可以添加此接口来添加统一的再处理逻辑，比如 token 实现后的重试。
+ * Post processing after the network request result is processed by {@link ResultHandlers},
+ * you can add this interface to add unified reprocessing logic, such as retry after token implementation.
  *
  * @author Ztiany
  */

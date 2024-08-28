@@ -13,8 +13,10 @@ import okhttp3.Response;
 public class ResponseProgressInterceptor implements Interceptor {
 
     private static final int DEFAULT_REFRESH_TIME = 150;
+
     private final UrlProgressListener mInterceptorProgressListener;
-    private int mRefreshTime = DEFAULT_REFRESH_TIME;//进度刷新时间(单位 ms)，避免高频率调用
+
+    private int mRefreshTime = DEFAULT_REFRESH_TIME;
 
     public ResponseProgressInterceptor(UrlProgressListener interceptorProgressListener) {
         mInterceptorProgressListener = interceptorProgressListener;

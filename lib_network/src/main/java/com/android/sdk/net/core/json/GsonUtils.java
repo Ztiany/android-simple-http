@@ -25,7 +25,6 @@ public class GsonUtils {
     private final static Gson GSON = new GsonBuilder()
             .excludeFieldsWithModifiers(Modifier.TRANSIENT)
             .excludeFieldsWithModifiers(Modifier.STATIC)
-            /*容错处理*/
             .registerTypeAdapter(int.class, new PrimitiveIntegerJsonDeserializer())
             .registerTypeAdapter(float.class, new PrimitiveFloatJsonDeserializer())
             .registerTypeAdapter(double.class, new PrimitiveDoubleJsonDeserializer())
@@ -35,7 +34,6 @@ public class GsonUtils {
             .registerTypeAdapter(String.class, new StringJsonDeserializer())
             .registerTypeAdapter(Void.class, new VoidJsonDeserializer())
             .registerTypeAdapter(Unit.class, new UnitJsonDeserializer())
-            /*根据注解反序列化抽象类或接口*/
             .registerTypeAdapterFactory(new AutoGenTypeAdapterFactory())
             .create();
 

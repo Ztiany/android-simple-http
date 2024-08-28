@@ -29,13 +29,12 @@ final class ErrorMessageFactoryImpl implements ErrorMessageFactory {
         Timber.d("createMessage with：%s", exception.toString());
 
         CharSequence message = null;
-        //SocketTimeoutException
-        //1：网络连接错误处理
+        //1：Network Connection Error Processing
         if (exception instanceof IOException) {
             message = errorMessage.netErrorMessage(exception);
         }
 
-        //2：服务器错误处理
+        //2：Server Error Processing
         else if (exception instanceof ServerErrorException) {
             int errorType = ((ServerErrorException) exception).getErrorType();
             if (errorType == ServerErrorException.SERVER_DATA_ERROR) {
@@ -45,12 +44,12 @@ final class ErrorMessageFactoryImpl implements ErrorMessageFactory {
             }
         }
 
-        //3：响应码非 200 处理
+        //3：Http Response Code is not 200
         else if (exception instanceof HttpException) {
             int code = ((HttpException) exception).code();
-            if (code >= 500/*http 500 表示服务器错误*/) {
+            if (code >= 500/*http 500*/) {
                 message = errorMessage.serverInternalErrorMessage(exception);
-            } else if (code >= 400/*http 400 表示客户端请求出错*/) {
+            } else if (code >= 400/*http 400*/) {
                 message = errorMessage.clientRequestErrorMessage(exception);
             }
         }
@@ -63,12 +62,12 @@ final class ErrorMessageFactoryImpl implements ErrorMessageFactory {
             }
         }
 
-        //6：RxJava Single
+        //5：RxJava Single
         else if (RxJavaChecker.hasRxJava2() && exception instanceof NoSuchElementException) {
             message = errorMessage.serverInternalErrorMessage(exception);
         }
 
-        //7：Others
+        //6：Others
         if (isEmpty(message)) {
             message = errorMessage.unknownErrorMessage(exception);
         }
@@ -77,7 +76,7 @@ final class ErrorMessageFactoryImpl implements ErrorMessageFactory {
     }
 
     private static boolean isEmpty(CharSequence str) {
-        return str == null || str.toString().trim().length() == 0;
+        return str == null || str.toString().trim().isEmpty();
     }
 
 }

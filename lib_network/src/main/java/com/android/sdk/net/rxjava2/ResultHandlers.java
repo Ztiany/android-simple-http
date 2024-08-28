@@ -6,9 +6,8 @@ import com.github.dmstocking.optional.java.util.Optional;
 
 
 /**
- * 用于处理 Retrofit + RxJava2 网络请求返回的结果。
+ * It is used to process the results returned by Retrofit + RxJava2 network requests.
  */
-@SuppressWarnings("unused")
 class ResultHandlers {
 
     private static class ResultTransformer<Upstream, T extends Result<Upstream>> extends HttpResultTransformer<Upstream, Upstream, T> {

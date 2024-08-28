@@ -15,7 +15,7 @@ import retrofit2.Retrofit;
 import timber.log.Timber;
 
 /**
- * json 解析容错处理，参考 <a href="http://blog.piasy.com/2016/09/04/RESTful-Android-Network-Solution-2/">RESTful-Android-Network-Solution-2</a>。
+ * Json Deserialization Error Handling, for more details, see <a href="http://blog.piasy.com/2016/09/04/RESTful-Android-Network-Solution-2/">RESTful-Android-Network-Solution-2</a>.
  *
  * @author Ztiany
  */
@@ -51,7 +51,11 @@ public class ErrorJsonLenientConverterFactory extends Converter.Factory {
         return (Converter<ResponseBody, Object>) value -> {
             try {
                 return delegateConverter.convert(value);
-            } catch (Exception e/*JsonSyntaxException、IOException or MalformedJsonException，高版本的 Retrofit 不再直接抛出异常，而是通过回调等方式将异常通知到调用者*/) {
+            } catch (Exception e/*JsonSyntaxException、IOException or MalformedJsonException*/) {
+                /*
+                 * If the conversion fails,that means the server return data is not what we expected.
+                 * We just throw a ServerErrorException, and the error should be handled by the subscriber.
+                 */
                 Timber.e(e, "Json covert error --> error, type is %s", type);
                 throw new ServerErrorException(ServerErrorException.SERVER_DATA_ERROR);
             }

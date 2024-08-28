@@ -4,12 +4,14 @@ plugins {
 }
 
 android {
-    compileSdkVersion 31
+    namespace "me.ztiany.simple.http.example"
+
+    compileSdk 34
 
     defaultConfig {
         applicationId "me.ztiany.simple.http.example"
-        minSdkVersion 21
-        targetSdkVersion 31
+        minSdk 21
+        targetSdk 34
         versionCode 1
         versionName "1.0.1"
     }
@@ -32,7 +34,7 @@ android {
                 "-Xcontext-receivers"
         ]
     }
-    
+
     lintOptions {
         checkReleaseBuilds false
         abortOnError false
@@ -41,21 +43,20 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.4.1'
-    implementation 'androidx.fragment:fragment-ktx:1.4.1'
-    implementation "androidx.activity:activity-ktx:1.4.0"
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation "androidx.activity:activity-ktx:1.9.1"
 
     implementation 'com.blankj:utilcodex:1.31.1'
 
     implementation "com.jakewharton.timber:timber:4.7.1"
-    implementation "com.squareup.retrofit2:converter-gson:2.9.0"
-    implementation "com.squareup.okhttp3:logging-interceptor:4.10.0"
+    implementation "com.squareup.retrofit2:converter-gson:2.11.0"
+    implementation "com.squareup.okhttp3:logging-interceptor:4.12.0"
 
     implementation project(':lib_network')
 
     //optional
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.8.20"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.0"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.24"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1"
     //optional
     implementation "io.reactivex.rxjava2:rxjava:2.2.21"
     implementation "com.squareup.retrofit2:adapter-rxjava2:2.9.0"

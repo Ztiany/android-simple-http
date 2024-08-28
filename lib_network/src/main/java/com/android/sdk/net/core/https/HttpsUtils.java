@@ -22,6 +22,8 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import timber.log.Timber;
+
 /**
  * @see <a href='https://github.com/hongyangAndroid/okhttputils'>hongyangAndroid okhttputils</a>.
  */
@@ -33,12 +35,12 @@ public class HttpsUtils {
     }
 
     /**
-     * 创建 SSLParams。
+     * Create the SSLParams.
      *
-     * @param certificates 本地证书流。
-     * @param bksFile      用于双向验证，本地 bks 证书。
-     * @param password     本地证书密码。
-     * @return 创建的 SSLParams。
+     * @param certificates Local certificate stream.
+     * @param bksFile      If it is used for two-way authentication, it is a local bks certificate.
+     * @param password     Local certificate password.
+     * @return The SSLParams.
      */
     public static SSLParams getSslSocketFactory(InputStream[] certificates, InputStream bksFile, String password) {
         SSLParams sslParams = new SSLParams();
@@ -104,8 +106,7 @@ public class HttpsUtils {
                 try {
                     if (certificate != null)
                         certificate.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (IOException ignored) {
                 }
             }
             TrustManagerFactory trustManagerFactory;
@@ -113,7 +114,7 @@ public class HttpsUtils {
             trustManagerFactory.init(keyStore);
             return trustManagerFactory.getTrustManagers();
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e, "prepareTrustManager");
         }
         return null;
     }
@@ -127,7 +128,7 @@ public class HttpsUtils {
             keyManagerFactory.init(clientKeyStore, password.toCharArray());
             return keyManagerFactory.getKeyManagers();
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e, "prepareKeyManager");
         }
         return null;
     }

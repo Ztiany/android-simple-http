@@ -5,11 +5,13 @@ plugins {
 }
 
 android {
+    namespace "com.android.sdk.net"
+
     compileSdk 34
 
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 34
+        minSdk 21
+        targetSdk 34
     }
 
     lintOptions {
@@ -28,18 +30,18 @@ android {
 }
 
 dependencies {
-    implementation "androidx.annotation:annotation:1.6.0"
+    implementation "androidx.annotation:annotation:1.8.2"
 
     //must
-    api "com.squareup.retrofit2:retrofit:2.9.0"
-    api "com.squareup.okhttp3:okhttp:4.10.0"
-    implementation "com.google.code.gson:gson:2.10.1"
-    implementation "com.squareup.retrofit2:converter-gson:2.9.0"
+    api "com.squareup.retrofit2:retrofit:2.11.0"
+    api "com.squareup.okhttp3:okhttp:4.12.0"
+    implementation "com.google.code.gson:gson:2.11.0"
+    implementation "com.squareup.retrofit2:converter-gson:2.11.0"
     implementation "com.jakewharton.timber:timber:4.7.1"
 
     //optional
-    api "org.jetbrains.kotlin:kotlin-stdlib:1.8.20"
-    compileOnly "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.0"
+    api "org.jetbrains.kotlin:kotlin-stdlib:1.9.24"
+    compileOnly "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1"
 
     //optional
     compileOnly "io.reactivex.rxjava2:rxjava:2.2.21"
@@ -47,13 +49,10 @@ dependencies {
     compileOnly "com.github.dmstocking:support-optional:1.2"
 
     testImplementation "io.reactivex.rxjava2:rxjava:2.2.21"
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.0"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1"
     testImplementation "com.squareup.retrofit2:adapter-rxjava2:2.9.0"
     testImplementation "com.github.dmstocking:support-optional:1.2"
 }
-
-group = 'io.github.ztiany'
-version = '1.0'
 
 afterEvaluate {
     publishing {
@@ -63,7 +62,7 @@ afterEvaluate {
                 from components.release
                 groupId = 'io.github.ztiany'
                 artifactId = 'android-simple-http'
-                version = '1.2.1'
+                version = '1.2.3'
             }
         }
     }

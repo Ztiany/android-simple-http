@@ -8,37 +8,37 @@ import com.android.sdk.net.core.exception.ApiErrorException;
 public interface ErrorMessage {
 
     /**
-     * 网络错误的提示消息。
+     * Generate a message for network error.
      */
     CharSequence netErrorMessage(Throwable exception);
 
     /**
-     * 服务器返回的数据格式异常的提示消息。
+     * Generate a message for server data format error.
      */
     CharSequence serverDataErrorMessage(Throwable exception);
 
     /**
-     * 当服务器返回的实体数据为 null 时的提示消息。
+     * Generate a message for server returning null entity.
      */
     CharSequence serverReturningNullEntityErrorMessage(Throwable exception);
 
     /**
-     * 服务器错误（code = 500-600）的提示消息。
+     * Generate a message for server internal error(response code = 500-600).
      */
     CharSequence serverInternalErrorMessage(Throwable exception);
 
     /**
-     * 客户端请求错误（code = 400-499）的提示消息。
+     * Generate a message for client request error(response code = 400-499).
      */
     CharSequence clientRequestErrorMessage(Throwable exception);
 
     /**
-     * API 调用错误的提示消息。
+     * Generate a message for api error.
      */
     CharSequence apiErrorMessage(ApiErrorException exception);
 
     /**
-     * 未知错误的提示消息。
+     * Generate a message for unknown error.
      */
     CharSequence unknownErrorMessage(Throwable exception);
 
