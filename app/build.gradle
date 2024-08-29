@@ -29,10 +29,8 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
-        freeCompilerArgs += [
-                "-Xcontext-receivers"
-        ]
+        jvmTarget = JavaVersion.VERSION_17.toString()
+        freeCompilerArgs += ["-Xcontext-receivers"]
     }
 
     lintOptions {
