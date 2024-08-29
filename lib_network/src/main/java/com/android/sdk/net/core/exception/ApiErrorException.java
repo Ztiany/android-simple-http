@@ -6,6 +6,7 @@ package com.android.sdk.net.core.exception;
 public class ApiErrorException extends Exception {
 
     private final int mCode;
+
     private final String mHostFlag;
 
     public ApiErrorException(int code, String message, String hostFlag) {

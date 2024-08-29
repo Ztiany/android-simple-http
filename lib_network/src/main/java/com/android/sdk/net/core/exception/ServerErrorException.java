@@ -31,16 +31,11 @@ public class ServerErrorException extends RuntimeException {
     }
 
     private String transform() {
-        String result = "";
-        switch (mErrorType) {
-            case SERVER_DATA_ERROR:
-                result = "SERVER_DATA_ERROR";
-                break;
-            case SERVER_NULL_DATA:
-                result = "SERVER_NO_DATA";
-                break;
-        }
-        return result;
+        return switch (mErrorType) {
+            case SERVER_DATA_ERROR -> "SERVER_DATA_ERROR";
+            case SERVER_NULL_DATA -> "SERVER_NO_DATA";
+            default -> "";
+        };
     }
 
 }
