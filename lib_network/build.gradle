@@ -19,14 +19,18 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
+}
+
+tasks.register('javadoc', Javadoc) {
+    options.encoding = "utf-8"
 }
 
 dependencies {
@@ -46,13 +50,14 @@ dependencies {
     //optional
     compileOnly "io.reactivex.rxjava2:rxjava:2.2.21"
     compileOnly "com.squareup.retrofit2:adapter-rxjava2:2.9.0"
-    compileOnly "com.github.dmstocking:support-optional:1.2"
 
     testImplementation "io.reactivex.rxjava2:rxjava:2.2.21"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1"
     testImplementation "com.squareup.retrofit2:adapter-rxjava2:2.9.0"
-    testImplementation "com.github.dmstocking:support-optional:1.2"
 }
+
+group = 'io.github.ztiany'
+version = '1.0'
 
 afterEvaluate {
     publishing {

@@ -3,7 +3,7 @@ package com.android.sdk.net
 import com.android.sdk.net.core.result.Result
 import com.android.sdk.net.coroutines.CallResult
 import com.android.sdk.net.coroutines.RetryDeterminer
-import com.github.dmstocking.optional.java.util.Optional
+import com.android.sdk.net.optional.Optional
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single

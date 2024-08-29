@@ -1,4 +1,4 @@
-# Lib Network
+# Lib SimpleHttp
 
 ## 1 Explanation
 
@@ -11,5 +11,5 @@ check out examples in the app module.
 ## 3 Installation
 
 ```groovy
-implementation "com.github.Ztiany:android-simple-http:1.2.2"
+implementation "com.github.Ztiany:android-simple-http:1.2.3"
 ```

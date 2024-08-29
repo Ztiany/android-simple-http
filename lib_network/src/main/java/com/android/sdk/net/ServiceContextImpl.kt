@@ -6,7 +6,7 @@ import com.android.sdk.net.coroutines.RetryDeterminer
 import com.android.sdk.net.rxjava2.internalOptionalExtractor
 import com.android.sdk.net.rxjava2.internalResultChecker
 import com.android.sdk.net.rxjava2.internalResultExtractor
-import com.github.dmstocking.optional.java.util.Optional
+import com.android.sdk.net.optional.Optional
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single

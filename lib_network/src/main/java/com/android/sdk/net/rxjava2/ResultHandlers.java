@@ -2,7 +2,7 @@ package com.android.sdk.net.rxjava2;
 
 import com.android.sdk.net.NetContext;
 import com.android.sdk.net.core.result.Result;
-import com.github.dmstocking.optional.java.util.Optional;
+import com.android.sdk.net.optional.Optional;
 
 
 /**
