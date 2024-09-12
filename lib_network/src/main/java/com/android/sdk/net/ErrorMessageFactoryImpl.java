@@ -38,9 +38,9 @@ final class ErrorMessageFactoryImpl implements ErrorMessageFactory {
         else if (exception instanceof ServerErrorException) {
             int errorType = ((ServerErrorException) exception).getErrorType();
             if (errorType == ServerErrorException.DATA_PARSE_ERROR) {
-                message = errorMessageConverter.serverDataErrorMessage(exception);
+                message = errorMessageConverter.serverDataParseErrorMessage(exception);
             } else if (errorType == ServerErrorException.EMPTY_SERVER_DATA) {
-                message = errorMessageConverter.serverReturningNullEntityErrorMessage(exception);
+                message = errorMessageConverter.nullEntityErrorMessage(exception);
             }
         }
 

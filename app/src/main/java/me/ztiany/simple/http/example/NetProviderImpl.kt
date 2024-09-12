@@ -149,23 +149,23 @@ internal fun newMockErrorBodyParser(): ErrorBodyParser {
 
 internal fun newErrorMessageConverter(): ErrorMessageConverter {
     return object : ErrorMessageConverter {
-        override fun netErrorMessage(exception: Throwable): CharSequence {
+        override fun netErrorMessage(throwable: Throwable): CharSequence {
             return getString(R.string.error_net_error)
         }
 
-        override fun serverDataErrorMessage(exception: Throwable): CharSequence {
+        override fun serverDataParseErrorMessage(throwable: Throwable): CharSequence {
             return getString(R.string.error_service_data_error)
         }
 
-        override fun serverReturningNullEntityErrorMessage(exception: Throwable?): CharSequence {
+        override fun nullEntityErrorMessage(throwable: Throwable): CharSequence {
             return getString(R.string.error_service_no_data_error)
         }
 
-        override fun serverInternalErrorMessage(exception: Throwable): CharSequence {
+        override fun serverInternalErrorMessage(throwable: Throwable): CharSequence {
             return getString(R.string.error_service_error)
         }
 
-        override fun clientRequestErrorMessage(exception: Throwable): CharSequence {
+        override fun clientRequestErrorMessage(throwable: Throwable): CharSequence {
             return getString(R.string.error_request_error)
         }
 
