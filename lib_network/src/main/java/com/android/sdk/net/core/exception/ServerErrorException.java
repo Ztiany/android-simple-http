@@ -15,6 +15,14 @@ public class ServerErrorException extends RuntimeException {
     /**
      * @param errorType {@link #DATA_PARSE_ERROR} or {@link #EMPTY_SERVER_DATA}
      */
+    public ServerErrorException(int errorType, @NonNull Exception cause) {
+        super(cause);
+        mErrorType = errorType;
+    }
+
+    /**
+     * @param errorType {@link #DATA_PARSE_ERROR} or {@link #EMPTY_SERVER_DATA}
+     */
     public ServerErrorException(int errorType) {
         mErrorType = errorType;
     }

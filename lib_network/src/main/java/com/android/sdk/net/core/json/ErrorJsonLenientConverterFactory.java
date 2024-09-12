@@ -62,7 +62,7 @@ public class ErrorJsonLenientConverterFactory extends Converter.Factory {
                  * We just throw a ServerErrorException, and the error should be handled by the subscriber.
                  */
                 Timber.e(e, "Json covert error --> error, type is %s", type);
-                ServerErrorException serverErrorException = new ServerErrorException(ServerErrorException.DATA_PARSE_ERROR);
+                ServerErrorException serverErrorException = new ServerErrorException(ServerErrorException.DATA_PARSE_ERROR, e);
                 ErrorListener errorListener = NetContext.get().hostConfig(mHostFlag).errorListener();
                 if (errorListener != null) {
                     errorListener.onServerDataParseError(serverErrorException, mHostFlag);
