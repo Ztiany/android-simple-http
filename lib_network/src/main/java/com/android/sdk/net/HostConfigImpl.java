@@ -6,13 +6,13 @@ import androidx.annotation.Nullable;
 import com.android.sdk.net.core.provider.ErrorListener;
 import com.android.sdk.net.core.provider.ErrorBodyParser;
 import com.android.sdk.net.core.provider.HttpConfig;
-import com.android.sdk.net.core.result.ErrorFactory;
+import com.android.sdk.net.core.result.ApiErrorFactory;
 import com.android.sdk.net.coroutines.CoroutinesResultPostProcessor;
 import com.android.sdk.net.rxjava2.RxResultPostTransformer;
 
-final class HostConfigProviderImpl implements HostConfigProvider {
+final class HostConfigImpl implements HostConfig {
 
-    ErrorFactory mErrorFactory;
+    ApiErrorFactory mApiErrorFactory;
 
     ErrorListener mErrorListener;
 
@@ -38,8 +38,8 @@ final class HostConfigProviderImpl implements HostConfigProvider {
 
     @Nullable
     @Override
-    public ErrorFactory errorFactory() {
-        return mErrorFactory;
+    public ApiErrorFactory apiErrorFactory() {
+        return mApiErrorFactory;
     }
 
 

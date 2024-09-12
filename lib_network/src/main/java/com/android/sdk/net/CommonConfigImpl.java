@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 import com.android.sdk.net.core.provider.ErrorMessageConverter;
 import com.android.sdk.net.core.provider.PlatformInteractor;
 
-final class CommonProviderImpl implements CommonProvider {
+final class CommonConfigImpl implements CommonConfig {
 
     ErrorMessageConverter mErrorMessageConverter;
 

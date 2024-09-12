@@ -3,7 +3,7 @@ package com.android.sdk.net
 import com.android.sdk.net.core.provider.ErrorMessageConverter
 import com.android.sdk.net.core.provider.PlatformInteractor
 
-internal interface CommonProvider {
+internal interface CommonConfig {
 
     fun errorMessageConverter(): ErrorMessageConverter
 

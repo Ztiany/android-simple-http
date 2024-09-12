@@ -1,6 +1,6 @@
 package com.android.sdk.net.coroutines
 
-import com.android.sdk.net.HostConfigProvider
+import com.android.sdk.net.HostConfig
 import com.android.sdk.net.NetContext
 import com.android.sdk.net.core.exception.ApiErrorException
 import com.android.sdk.net.core.result.Result
@@ -11,17 +11,17 @@ import retrofit2.HttpException
 internal fun createApiException(
     result: Result<*>,
     hostFlag: String,
-    hostConfigProvider: HostConfigProvider,
-): Throwable {
+    hostConfigProvider: HostConfig,
+): ApiErrorException {
 
-    var errorFactory = hostConfigProvider.errorFactory()
+    var apiErrorFactory = hostConfigProvider.apiErrorFactory()
 
-    if (errorFactory == null) {
-        errorFactory = hostConfigProvider.errorFactory()
+    if (apiErrorFactory == null) {
+        apiErrorFactory = hostConfigProvider.apiErrorFactory()
     }
 
-    if (errorFactory != null) {
-        val exception = errorFactory.create(result, hostFlag)
+    if (apiErrorFactory != null) {
+        val exception = apiErrorFactory.create(result, hostFlag)
         if (exception != null) {
             return exception
         }
@@ -31,7 +31,7 @@ internal fun createApiException(
 }
 
 internal fun postAction(hostFlag: String): CoroutinesResultPostProcessor {
-    return NetContext.get().hostConfigProvider(hostFlag).coroutinesResultPostProcessor() ?: EMPTY_ENTRY
+    return NetContext.get().hostConfig(hostFlag).coroutinesResultPostProcessor() ?: EMPTY_ENTRY
 }
 
 private val EMPTY_ENTRY = object : CoroutinesResultPostProcessor {
@@ -46,7 +46,7 @@ internal fun transformHttpException(hostFlag: String, throwable: Throwable): Thr
         throw throwable
     }
 
-    val errorBodyHandler = NetContext.get().hostConfigProvider(hostFlag).errorBodyHandler()
+    val errorBodyHandler = NetContext.get().hostConfig(hostFlag).errorBodyHandler()
 
     return if (errorBodyHandler != null && throwable is HttpException && throwable.code() < 500/*http status code*/) {
         val errorBody = throwable.response()?.errorBody()

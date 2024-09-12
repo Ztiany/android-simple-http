@@ -4,16 +4,16 @@ import androidx.annotation.MainThread
 import com.android.sdk.net.core.provider.ErrorMessageConverter
 import com.android.sdk.net.core.provider.PlatformInteractor
 
-class CommonBuilder internal constructor(private val netContext: NetContext) {
+class CommonConfigBuilder internal constructor(private val netContext: NetContext) {
 
-    private val commonProvider = CommonProviderImpl()
+    private val commonProvider = CommonConfigImpl()
 
-    fun errorMessageConverter(errorMessageConverter: ErrorMessageConverter): CommonBuilder {
+    fun errorMessageConverter(errorMessageConverter: ErrorMessageConverter): CommonConfigBuilder {
         commonProvider.mErrorMessageConverter = errorMessageConverter
         return this
     }
 
-    fun platformInteractor(platformInteractor: PlatformInteractor): CommonBuilder {
+    fun platformInteractor(platformInteractor: PlatformInteractor): CommonConfigBuilder {
         commonProvider.mPlatformInteractor = platformInteractor
         return this
     }

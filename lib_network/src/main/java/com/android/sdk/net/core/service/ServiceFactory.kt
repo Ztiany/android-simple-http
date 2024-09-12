@@ -33,9 +33,11 @@ class ServiceFactory internal constructor(
         val builder = Retrofit.Builder()
 
         if (!httpConfig.configRetrofit(httpClient, builder)) {
-            builder.baseUrl(mBaseUrl)
+            builder
+                .baseUrl(mBaseUrl)
                 .client(httpClient)
                 .addConverterFactory(ErrorJsonLenientConverterFactory(hostFlag, GsonConverterFactory.create(GsonUtils.gson())))
+
             if (RxJavaChecker.hasRxJava2()) {
                 builder.addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
             }
@@ -63,7 +65,6 @@ class ServiceFactory internal constructor(
         checkHostFlag()
         return createWithUploadProgress(urlProgressListener, clazz)
     }
-
 
     fun <T> createDefaultWithDownloadProgress(clazz: Class<T>, urlProgressListener: UrlProgressListener): T {
         checkHostFlag()

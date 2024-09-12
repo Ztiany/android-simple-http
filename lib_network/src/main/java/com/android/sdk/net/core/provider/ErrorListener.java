@@ -2,8 +2,8 @@ package com.android.sdk.net.core.provider;
 
 import androidx.annotation.NonNull;
 
+import com.android.sdk.net.core.exception.ApiErrorException;
 import com.android.sdk.net.core.exception.ServerErrorException;
-import com.android.sdk.net.core.result.Result;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -14,7 +14,7 @@ import okhttp3.ResponseBody;
  */
 public interface ErrorListener {
 
-    void onApiError(@NonNull Result<?> result, @NotNull String hostFlag);
+    void onApiErrorException(@NonNull ApiErrorException apiErrorException, @NotNull String hostFlag);
 
     void onServerDataEmptyError(@NonNull ServerErrorException exception, @NotNull String hostFlag);
 

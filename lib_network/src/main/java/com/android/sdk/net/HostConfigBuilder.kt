@@ -4,7 +4,7 @@ import androidx.annotation.MainThread
 import com.android.sdk.net.core.provider.ErrorListener
 import com.android.sdk.net.core.provider.ErrorBodyParser
 import com.android.sdk.net.core.provider.HttpConfig
-import com.android.sdk.net.core.result.ErrorFactory
+import com.android.sdk.net.core.result.ApiErrorFactory
 import com.android.sdk.net.coroutines.CoroutinesResultPostProcessor
 import com.android.sdk.net.rxjava2.RxResultPostTransformer
 
@@ -13,7 +13,7 @@ class HostConfigBuilder internal constructor(
     private val netContext: NetContext
 ) {
 
-    private val configProvider = HostConfigProviderImpl()
+    private val configProvider = HostConfigImpl()
 
     fun errorListener(errorListener: ErrorListener): HostConfigBuilder {
         configProvider.mErrorListener = errorListener
@@ -25,8 +25,8 @@ class HostConfigBuilder internal constructor(
         return this
     }
 
-    fun errorFactory(errorFactory: ErrorFactory): HostConfigBuilder {
-        configProvider.mErrorFactory = errorFactory
+    fun apiErrorFactory(apiErrorFactory: ApiErrorFactory): HostConfigBuilder {
+        configProvider.mApiErrorFactory = apiErrorFactory
         return this
     }
 

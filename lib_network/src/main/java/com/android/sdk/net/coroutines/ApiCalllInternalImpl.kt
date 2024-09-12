@@ -28,7 +28,7 @@ private suspend fun <T> realCall(
 ): CallResult<T> {
 
     val netContext = NetContext.get()
-    val netProvider = netContext.hostConfigProvider(hostFlag)
+    val netProvider = netContext.hostConfig(hostFlag)
 
     val result: Result<T>?
 
@@ -47,8 +47,9 @@ private suspend fun <T> realCall(
 
     return if (!result.isSuccess) { //检测响应码是否正确
 
-        netProvider.errorListener()?.onApiError(result, hostFlag)
-        CallResult.Error(createApiException(result, hostFlag, netProvider))
+        CallResult.Error(createApiException(result, hostFlag, netProvider).apply {
+            netProvider.errorListener()?.onApiErrorException(this, hostFlag)
+        })
 
     } else if (requireNonNullData) { //如果约定必须返回的数据却没有返回数据，则认为是服务器错误。
 

@@ -22,7 +22,7 @@ public class NetContext {
 
     @SuppressLint("StaticFieldLeak") private static volatile NetContext CONTEXT;
 
-    private final Map<String, HostConfigProvider> mProviderMap = new ConcurrentHashMap<>();
+    private final Map<String, HostConfig> mProviderMap = new ConcurrentHashMap<>();
 
     public static final String DEFAULT_CONFIG = "default_host_config";
 
@@ -30,7 +30,7 @@ public class NetContext {
 
     private Context mContext;
 
-    private CommonProvider mCommonProvider;
+    private CommonConfig mCommonConfig;
 
     private final ErrorMessageFactory mErrorMessageFactory;
 
@@ -50,14 +50,14 @@ public class NetContext {
         mErrorMessageFactory = new ErrorMessageFactoryImpl();
     }
 
-    void initCommonProvider(CommonProvider commonProvider) {
-        mCommonProvider = commonProvider;
+    void initCommonProvider(CommonConfig commonConfig) {
+        mCommonConfig = commonConfig;
     }
 
     @MainThread
-    public CommonBuilder newCommonConfig(Context context) {
+    public CommonConfigBuilder newCommonConfig(Context context) {
         mContext = context;
-        return new CommonBuilder(this);
+        return new CommonConfigBuilder(this);
     }
 
     @MainThread
@@ -66,11 +66,11 @@ public class NetContext {
         return new HostConfigBuilder(flag, this);
     }
 
-    void addInto(String flag, @NonNull HostConfigProvider hostConfigProvider) {
+    void addInto(String flag, @NonNull HostConfig hostConfig) {
         if (mProviderMap.containsKey(flag)) {
             throw new RuntimeException("The HostConfigProvider identified as " + flag + " has been initialized");
         }
-        mProviderMap.put(flag, hostConfigProvider);
+        mProviderMap.put(flag, hostConfig);
     }
 
     private void checkIfHasBeenInitialized() {
@@ -79,23 +79,23 @@ public class NetContext {
         }
     }
 
-    public CommonProvider commonProvider() {
-        return mCommonProvider;
+    public CommonConfig commonConfig() {
+        return mCommonConfig;
     }
 
     public boolean isConnected() {
-        return commonProvider().platformInteractor().isConnected();
+        return commonConfig().platformInteractor().isConnected();
     }
 
     @NonNull
-    public HostConfigProvider hostConfigProvider(@NonNull String flag) {
-        HostConfigProvider hostConfigProvider = mProviderMap.get(flag);
+    public HostConfig hostConfig(@NonNull String flag) {
+        HostConfig hostConfig = mProviderMap.get(flag);
 
-        if (hostConfigProvider == null) {
+        if (hostConfig == null) {
             throw new RuntimeException("The HostNetProvider identified as " + flag + " has not been initialized");
         }
 
-        return hostConfigProvider;
+        return hostConfig;
     }
 
     public OkHttpClient httpClient() {
@@ -103,11 +103,11 @@ public class NetContext {
     }
 
     public OkHttpClient httpClient(@NonNull String flag) {
-        return mServiceHelper.getOkHttpClient(flag, hostConfigProvider(flag).httpConfig());
+        return mServiceHelper.getOkHttpClient(flag, hostConfig(flag).httpConfig());
     }
 
     public ServiceFactory serviceFactory(@NonNull String flag) {
-        return mServiceHelper.getServiceFactory(flag, hostConfigProvider(flag).httpConfig());
+        return mServiceHelper.getServiceFactory(flag, hostConfig(flag).httpConfig());
     }
 
     public Context getContext() {

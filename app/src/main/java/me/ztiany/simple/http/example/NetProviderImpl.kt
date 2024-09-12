@@ -7,7 +7,6 @@ import com.android.sdk.net.core.provider.ErrorListener
 import com.android.sdk.net.core.provider.ErrorMessageConverter
 import com.android.sdk.net.core.provider.HttpConfig
 import com.android.sdk.net.core.provider.PlatformInteractor
-import com.android.sdk.net.core.result.Result
 import com.blankj.utilcode.util.NetworkUtils
 import me.ztiany.simple.http.example.App.Companion.getString
 import okhttp3.OkHttpClient
@@ -182,9 +181,9 @@ internal fun newErrorMessageConverter(): ErrorMessageConverter {
 
 internal fun newErrorHandler() = object : ErrorListener {
 
-    override fun onApiError(result: Result<*>, hostFlag: String) {
+    override fun onApiErrorException(apiErrorException: ApiErrorException, hostFlag: String) {
         //登录状态已过期，请重新登录、账号在其他设备登陆
-        Timber.d("ApiHandler result: $result, hostFlag: $hostFlag")
+        Timber.d("ApiHandler result: $apiErrorException, hostFlag: $hostFlag")
     }
 
     override fun onServerDataEmptyError(exception: ServerErrorException, hostFlag: String) {

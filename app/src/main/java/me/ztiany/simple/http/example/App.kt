@@ -23,12 +23,12 @@ class App : Application() {
             httpConfig(newHttpConfig())
             errorListener(newErrorHandler())
             errorBodyParser(newErrorBodyParser())
-            errorFactory { _, _ -> null }
+            apiErrorFactory { _, _ -> null }
         }.addHostConfig("Mock"){
             httpConfig(newMockHttpConfig())
             errorListener(newErrorHandler())
             errorBodyParser(newMockErrorBodyParser())
-            errorFactory { _, _ -> null }
+            apiErrorFactory { _, _ -> null }
         }
     }
 

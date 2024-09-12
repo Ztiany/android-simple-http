@@ -3,12 +3,12 @@ package com.android.sdk.net.rxjava2;
 
 import androidx.annotation.NonNull;
 
-import com.android.sdk.net.HostConfigProvider;
+import com.android.sdk.net.HostConfig;
 import com.android.sdk.net.NetContext;
 import com.android.sdk.net.core.exception.ApiErrorException;
 import com.android.sdk.net.core.exception.ServerErrorException;
 import com.android.sdk.net.core.provider.ErrorListener;
-import com.android.sdk.net.core.result.ErrorFactory;
+import com.android.sdk.net.core.result.ApiErrorFactory;
 import com.android.sdk.net.core.result.Result;
 import com.android.sdk.net.coroutines.CommonInternalKt;
 
@@ -54,7 +54,7 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
 
         @SuppressWarnings("unchecked")
         RxResultPostTransformer<Downstream> rxResultPostTransformer =
-                (RxResultPostTransformer<Downstream>) NetContext.get().hostConfigProvider(mHostFlag).rxResultPostTransformer();
+                (RxResultPostTransformer<Downstream>) NetContext.get().hostConfig(mHostFlag).rxResultPostTransformer();
 
         if (rxResultPostTransformer != null) {
             return downstreamFlowable.compose(rxResultPostTransformer);
@@ -75,7 +75,7 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
 
         @SuppressWarnings("unchecked")
         RxResultPostTransformer<Downstream> rxResultPostTransformer =
-                (RxResultPostTransformer<Downstream>) NetContext.get().hostConfigProvider(mHostFlag).rxResultPostTransformer();
+                (RxResultPostTransformer<Downstream>) NetContext.get().hostConfig(mHostFlag).rxResultPostTransformer();
 
         if (rxResultPostTransformer != null) {
             return downstreamObservable.compose(rxResultPostTransformer);
@@ -94,7 +94,7 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
 
         @SuppressWarnings("unchecked")
         RxResultPostTransformer<Downstream> rxResultPostTransformer =
-                (RxResultPostTransformer<Downstream>) NetContext.get().hostConfigProvider(mHostFlag).rxResultPostTransformer();
+                (RxResultPostTransformer<Downstream>) NetContext.get().hostConfig(mHostFlag).rxResultPostTransformer();
 
         if (rxResultPostTransformer != null) {
             return downstreamSingle.compose(rxResultPostTransformer);
@@ -105,14 +105,15 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
 
     private Downstream processData(Result<Upstream> rResult) {
         NetContext netContext = NetContext.get();
-        HostConfigProvider hostConfigProvider = netContext.hostConfigProvider(mHostFlag);
-        ErrorListener errorListener = hostConfigProvider.errorListener();
+        HostConfig hostConfig = netContext.hostConfig(mHostFlag);
+        ErrorListener errorListener = hostConfig.errorListener();
 
         if (!rResult.isSuccess()) {//检测响应码是否正确
+            ApiErrorException exception = createException(rResult, mHostFlag, hostConfig);
             if (errorListener != null) {
-                errorListener.onApiError(rResult, mHostFlag);
+                errorListener.onApiErrorException(exception, mHostFlag);
             }
-            throwAs(createException(rResult, mHostFlag, hostConfigProvider));
+            throwAs(exception);
         }
 
         if (mRequireNonNullData) {
@@ -129,17 +130,17 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
         return mDataExtractor.getDataFromHttpResult(rResult);
     }
 
-    private Throwable createException(@NonNull Result<Upstream> rResult, String flag, HostConfigProvider hostConfigProvider) {
-        ErrorFactory errorFactory = NetContext.get().hostConfigProvider(flag).errorFactory();
+    private ApiErrorException createException(@NonNull Result<Upstream> rResult, String flag, HostConfig hostConfig) {
+        ApiErrorFactory apiErrorFactory = NetContext.get().hostConfig(flag).apiErrorFactory();
 
-        if (errorFactory == null) {
-            errorFactory = hostConfigProvider.errorFactory();
+        if (apiErrorFactory == null) {
+            apiErrorFactory = hostConfig.apiErrorFactory();
         }
 
-        if (errorFactory != null) {
-            Throwable throwable = errorFactory.create(rResult, flag);
-            if (throwable != null) {
-                return throwable;
+        if (apiErrorFactory != null) {
+            ApiErrorException apiErrorException = apiErrorFactory.create(rResult, flag);
+            if (apiErrorException != null) {
+                return apiErrorException;
             }
         }
 

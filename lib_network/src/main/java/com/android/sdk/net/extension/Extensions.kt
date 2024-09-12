@@ -1,7 +1,7 @@
 package com.android.sdk.net.extension
 
 import android.content.Context
-import com.android.sdk.net.CommonBuilder
+import com.android.sdk.net.CommonConfigBuilder
 import com.android.sdk.net.HostConfigBuilder
 import com.android.sdk.net.NetContext
 import com.android.sdk.net.ServiceContext
@@ -11,7 +11,7 @@ inline fun <reified T> ServiceFactory.createDefault(): T = createDefault(T::clas
 
 inline fun <reified T> ServiceFactory.createServiceContext(): ServiceContext<T> = createServiceContext(T::class.java)
 
-fun NetContext.init(context: Context, init: CommonBuilder.() -> Unit): NetContext {
+fun NetContext.init(context: Context, init: CommonConfigBuilder.() -> Unit): NetContext {
     val commonConfig = NetContext.get().newCommonConfig(context)
     init(commonConfig)
     commonConfig.setup()

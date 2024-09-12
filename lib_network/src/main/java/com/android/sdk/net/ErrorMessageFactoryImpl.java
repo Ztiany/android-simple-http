@@ -24,7 +24,7 @@ final class ErrorMessageFactoryImpl implements ErrorMessageFactory {
     @NonNull
     @Override
     public CharSequence createMessage(@NonNull Throwable exception) {
-        ErrorMessageConverter errorMessageConverter = NetContext.get().commonProvider().errorMessageConverter();
+        ErrorMessageConverter errorMessageConverter = NetContext.get().commonConfig().errorMessageConverter();
 
         Timber.d("createMessage with：%s", exception.toString());
 
