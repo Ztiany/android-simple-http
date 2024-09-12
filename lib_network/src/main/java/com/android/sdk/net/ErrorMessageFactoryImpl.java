@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 import com.android.sdk.net.core.exception.ApiErrorException;
 import com.android.sdk.net.core.exception.ErrorMessageFactory;
 import com.android.sdk.net.core.exception.ServerErrorException;
-import com.android.sdk.net.core.provider.ErrorMessage;
+import com.android.sdk.net.core.provider.ErrorMessageConverter;
 import com.android.sdk.net.rxjava2.RxJavaChecker;
 
 import java.io.IOException;
@@ -24,23 +24,23 @@ final class ErrorMessageFactoryImpl implements ErrorMessageFactory {
     @NonNull
     @Override
     public CharSequence createMessage(@NonNull Throwable exception) {
-        ErrorMessage errorMessage = NetContext.get().commonProvider().errorMessage();
+        ErrorMessageConverter errorMessageConverter = NetContext.get().commonProvider().errorMessageConverter();
 
         Timber.d("createMessage with：%s", exception.toString());
 
         CharSequence message = null;
         //1：Network Connection Error Processing
         if (exception instanceof IOException) {
-            message = errorMessage.netErrorMessage(exception);
+            message = errorMessageConverter.netErrorMessage(exception);
         }
 
         //2：Server Error Processing
         else if (exception instanceof ServerErrorException) {
             int errorType = ((ServerErrorException) exception).getErrorType();
-            if (errorType == ServerErrorException.SERVER_DATA_ERROR) {
-                message = errorMessage.serverDataErrorMessage(exception);
-            } else if (errorType == ServerErrorException.SERVER_NULL_DATA) {
-                message = errorMessage.serverReturningNullEntityErrorMessage(exception);
+            if (errorType == ServerErrorException.DATA_PARSE_ERROR) {
+                message = errorMessageConverter.serverDataErrorMessage(exception);
+            } else if (errorType == ServerErrorException.EMPTY_SERVER_DATA) {
+                message = errorMessageConverter.serverReturningNullEntityErrorMessage(exception);
             }
         }
 
@@ -48,9 +48,9 @@ final class ErrorMessageFactoryImpl implements ErrorMessageFactory {
         else if (exception instanceof HttpException) {
             int code = ((HttpException) exception).code();
             if (code >= 500/*http 500*/) {
-                message = errorMessage.serverInternalErrorMessage(exception);
+                message = errorMessageConverter.serverInternalErrorMessage(exception);
             } else if (code >= 400/*http 400*/) {
-                message = errorMessage.clientRequestErrorMessage(exception);
+                message = errorMessageConverter.clientRequestErrorMessage(exception);
             }
         }
 
@@ -58,18 +58,18 @@ final class ErrorMessageFactoryImpl implements ErrorMessageFactory {
         else if (exception instanceof ApiErrorException) {
             message = exception.getMessage();
             if (TextUtils.isEmpty(message)) {
-                message = errorMessage.apiErrorMessage((ApiErrorException) exception);
+                message = errorMessageConverter.apiErrorMessage((ApiErrorException) exception);
             }
         }
 
         //5：RxJava Single
         else if (RxJavaChecker.hasRxJava2() && exception instanceof NoSuchElementException) {
-            message = errorMessage.serverInternalErrorMessage(exception);
+            message = errorMessageConverter.serverInternalErrorMessage(exception);
         }
 
         //6：Others
         if (isEmpty(message)) {
-            message = errorMessage.unknownErrorMessage(exception);
+            message = errorMessageConverter.unknownErrorMessage(exception);
         }
 
         return message;

@@ -9,11 +9,11 @@ public class ServerErrorException extends RuntimeException {
 
     private final int mErrorType;
 
-    public static final int SERVER_DATA_ERROR = 1;
-    public static final int SERVER_NULL_DATA = 2;
+    public static final int DATA_PARSE_ERROR = 1;
+    public static final int EMPTY_SERVER_DATA = 2;
 
     /**
-     * @param errorType {@link #SERVER_DATA_ERROR} or {@link #SERVER_NULL_DATA}
+     * @param errorType {@link #DATA_PARSE_ERROR} or {@link #EMPTY_SERVER_DATA}
      */
     public ServerErrorException(int errorType) {
         mErrorType = errorType;
@@ -32,9 +32,9 @@ public class ServerErrorException extends RuntimeException {
 
     private String transform() {
         return switch (mErrorType) {
-            case SERVER_DATA_ERROR -> "SERVER_DATA_ERROR";
-            case SERVER_NULL_DATA -> "SERVER_NO_DATA";
-            default -> "";
+            case DATA_PARSE_ERROR -> "DATA_PARSE_ERROR";
+            case EMPTY_SERVER_DATA -> "EMPTY_SERVER_DATA";
+            default -> "Unknown";
         };
     }
 

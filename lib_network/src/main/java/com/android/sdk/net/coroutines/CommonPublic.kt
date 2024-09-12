@@ -91,7 +91,7 @@ suspend fun <T : Any> executeApiCall(
 suspend fun <T : Any?> apiCallNullable(
     /**
      * Note: At present(retrofit:2.9.0)，Defining return type of suspend api method as T? is not supported.
-     * Responses of Http life 204 will cause an Exception: `kotlin.KotlinNullPointerException: Response from xxx was null but response body type was declared as non-null KotlinNullPointerException`.
+     * Responses of Http like 204 will cause an Exception: `kotlin.KotlinNullPointerException: Response from xxx was null but response body type was declared as non-null KotlinNullPointerException`.
      */
     call: suspend () -> Result<T>?,
 ): CallResult<T?> {
@@ -107,7 +107,7 @@ suspend fun <T : Any?> apiCallNullable(
     retryDeterminer: RetryDeterminer,
     /**
      * Note: At present(retrofit:2.9.0)，Defining return type of suspend api method as T? is not supported.
-     * Responses of Http life 204 will cause an Exception: `kotlin.KotlinNullPointerException: Response from xxx was null but response body type was declared as non-null KotlinNullPointerException`.
+     * Responses of Http like 204 will cause an Exception: `kotlin.KotlinNullPointerException: Response from xxx was null but response body type was declared as non-null KotlinNullPointerException`.
      */
     call: suspend () -> Result<T>?,
 ): CallResult<T?> {
@@ -125,7 +125,7 @@ suspend fun <T : Any?> apiCallNullable(
 suspend fun <T : Any?> executeApiCallNullable(
     /**
      * Note: At present(retrofit:2.9.0)，Defining return type of suspend api method as T? is not supported.
-     * Responses of Http life 204 will cause an Exception: `kotlin.KotlinNullPointerException: Response from xxx was null but response body type was declared as non-null KotlinNullPointerException`.
+     * Responses of Http like 204 will cause an Exception: `kotlin.KotlinNullPointerException: Response from xxx was null but response body type was declared as non-null KotlinNullPointerException`.
      */
     call: suspend () -> Result<T>?,
 ): T? {
@@ -144,7 +144,7 @@ suspend fun <T : Any?> executeApiCallNullable(
     retryDeterminer: RetryDeterminer,
     /**
      * Note: At present(retrofit:2.9.0)，Defining return type of suspend api method as T? is not supported.
-     * Responses of Http life 204 will cause an Exception: `kotlin.KotlinNullPointerException: Response from xxx was null but response body type was declared as non-null KotlinNullPointerException`.
+     * Responses of Http like 204 will cause an Exception: `kotlin.KotlinNullPointerException: Response from xxx was null but response body type was declared as non-null KotlinNullPointerException`.
      */
     call: suspend () -> Result<T>?,
 ): T? {

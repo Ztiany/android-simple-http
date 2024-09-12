@@ -1,15 +1,15 @@
 package com.android.sdk.net
 
 import androidx.annotation.MainThread
-import com.android.sdk.net.core.provider.ErrorMessage
+import com.android.sdk.net.core.provider.ErrorMessageConverter
 import com.android.sdk.net.core.provider.PlatformInteractor
 
 class CommonBuilder internal constructor(private val netContext: NetContext) {
 
     private val commonProvider = CommonProviderImpl()
 
-    fun errorMessage(errorMessage: ErrorMessage): CommonBuilder {
-        commonProvider.mErrorMessage = errorMessage
+    fun errorMessageConverter(errorMessageConverter: ErrorMessageConverter): CommonBuilder {
+        commonProvider.mErrorMessageConverter = errorMessageConverter
         return this
     }
 
@@ -19,7 +19,7 @@ class CommonBuilder internal constructor(private val netContext: NetContext) {
     }
 
     @MainThread
-    internal fun setUp(): NetContext {
+    internal fun setup(): NetContext {
         commonProvider.checkRequirement()
         netContext.initCommonProvider(commonProvider)
         return netContext

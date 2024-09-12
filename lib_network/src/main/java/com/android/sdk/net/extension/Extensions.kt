@@ -6,11 +6,6 @@ import com.android.sdk.net.HostConfigBuilder
 import com.android.sdk.net.NetContext
 import com.android.sdk.net.ServiceContext
 import com.android.sdk.net.core.service.ServiceFactory
-import com.android.sdk.net.coroutines.CallResult
-import timber.log.Timber
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.InvocationKind
-import kotlin.contracts.contract
 
 inline fun <reified T> ServiceFactory.createDefault(): T = createDefault(T::class.java)
 
@@ -19,7 +14,7 @@ inline fun <reified T> ServiceFactory.createServiceContext(): ServiceContext<T> 
 fun NetContext.init(context: Context, init: CommonBuilder.() -> Unit): NetContext {
     val commonConfig = NetContext.get().newCommonConfig(context)
     init(commonConfig)
-    commonConfig.setUp()
+    commonConfig.setup()
     return this
 }
 
@@ -29,7 +24,7 @@ fun NetContext.init(context: Context, init: CommonBuilder.() -> Unit): NetContex
 fun NetContext.setDefaultHostConfig(config: HostConfigBuilder.() -> Unit): NetContext {
     val builder = NetContext.get().newHostBuilder(NetContext.DEFAULT_CONFIG)
     config(builder)
-    builder.setUp()
+    builder.setup()
     return this
 }
 
@@ -43,6 +38,6 @@ fun NetContext.defaultServiceFactory(): ServiceFactory {
 fun NetContext.addHostConfig(flag: String, config: HostConfigBuilder.() -> Unit): NetContext {
     val builder = NetContext.get().newHostBuilder(flag)
     config(builder)
-    builder.setUp()
+    builder.setup()
     return this
 }

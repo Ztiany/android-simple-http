@@ -3,9 +3,11 @@ package com.android.sdk.net.core.provider;
 import com.android.sdk.net.core.exception.ApiErrorException;
 
 /**
+ * Convert error to message.
+ *
  * @author Ztiany
  */
-public interface ErrorMessage {
+public interface ErrorMessageConverter {
 
     /**
      * Generate a message for network error.

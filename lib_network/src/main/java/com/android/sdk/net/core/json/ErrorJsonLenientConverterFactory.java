@@ -3,7 +3,9 @@ package com.android.sdk.net.core.json;
 
 import androidx.annotation.NonNull;
 
+import com.android.sdk.net.NetContext;
 import com.android.sdk.net.core.exception.ServerErrorException;
+import com.android.sdk.net.core.provider.ErrorListener;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -23,7 +25,10 @@ public class ErrorJsonLenientConverterFactory extends Converter.Factory {
 
     private final Converter.Factory mGsonConverterFactory;
 
-    public ErrorJsonLenientConverterFactory(Converter.Factory gsonConverterFactory) {
+    private final String mHostFlag;
+
+    public ErrorJsonLenientConverterFactory(String hostFlag, Converter.Factory gsonConverterFactory) {
+        mHostFlag = hostFlag;
         mGsonConverterFactory = gsonConverterFactory;
     }
 
@@ -57,7 +62,12 @@ public class ErrorJsonLenientConverterFactory extends Converter.Factory {
                  * We just throw a ServerErrorException, and the error should be handled by the subscriber.
                  */
                 Timber.e(e, "Json covert error --> error, type is %s", type);
-                throw new ServerErrorException(ServerErrorException.SERVER_DATA_ERROR);
+                ServerErrorException serverErrorException = new ServerErrorException(ServerErrorException.DATA_PARSE_ERROR);
+                ErrorListener errorListener = NetContext.get().hostConfigProvider(mHostFlag).errorListener();
+                if (errorListener != null) {
+                    errorListener.onServerDataParseError(serverErrorException, value, mHostFlag);
+                }
+                throw serverErrorException;
             }
         };
     }

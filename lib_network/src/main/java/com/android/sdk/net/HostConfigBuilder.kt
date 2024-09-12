@@ -1,10 +1,10 @@
 package com.android.sdk.net
 
 import androidx.annotation.MainThread
-import com.android.sdk.net.core.provider.ApiHandler
+import com.android.sdk.net.core.provider.ErrorListener
 import com.android.sdk.net.core.provider.ErrorBodyParser
 import com.android.sdk.net.core.provider.HttpConfig
-import com.android.sdk.net.core.result.ExceptionFactory
+import com.android.sdk.net.core.result.ErrorFactory
 import com.android.sdk.net.coroutines.CoroutinesResultPostProcessor
 import com.android.sdk.net.rxjava2.RxResultPostTransformer
 
@@ -15,8 +15,8 @@ class HostConfigBuilder internal constructor(
 
     private val configProvider = HostConfigProviderImpl()
 
-    fun aipHandler(apiHandler: ApiHandler): HostConfigBuilder {
-        configProvider.mApiHandler = apiHandler
+    fun errorListener(errorListener: ErrorListener): HostConfigBuilder {
+        configProvider.mErrorListener = errorListener
         return this
     }
 
@@ -25,12 +25,12 @@ class HostConfigBuilder internal constructor(
         return this
     }
 
-    fun exceptionFactory(exceptionFactory: ExceptionFactory): HostConfigBuilder {
-        configProvider.mExceptionFactory = exceptionFactory
+    fun errorFactory(errorFactory: ErrorFactory): HostConfigBuilder {
+        configProvider.mErrorFactory = errorFactory
         return this
     }
 
-    fun errorBodyHandler(errorBodyParser: ErrorBodyParser): HostConfigBuilder {
+    fun errorBodyParser(errorBodyParser: ErrorBodyParser): HostConfigBuilder {
         configProvider.mErrorBodyParser = errorBodyParser
         return this
     }
@@ -52,7 +52,7 @@ class HostConfigBuilder internal constructor(
     }
 
     @MainThread
-    internal fun setUp(): NetContext {
+    internal fun setup(): NetContext {
         configProvider.checkRequired()
         netContext.addInto(hostFlag, configProvider)
         return netContext

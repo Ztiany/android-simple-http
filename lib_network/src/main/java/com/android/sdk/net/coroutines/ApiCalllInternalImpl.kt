@@ -27,6 +27,9 @@ private suspend fun <T> realCall(
     hostFlag: String,
 ): CallResult<T> {
 
+    val netContext = NetContext.get()
+    val netProvider = netContext.hostConfigProvider(hostFlag)
+
     val result: Result<T>?
 
     try {
@@ -37,22 +40,23 @@ private suspend fun <T> realCall(
 
     //TODO: 支持自定义处理
     if (result == null) {
-        throw ServerErrorException(ServerErrorException.SERVER_NULL_DATA)
+        val serverErrorException = ServerErrorException(ServerErrorException.EMPTY_SERVER_DATA)
+        netProvider.errorListener()?.onServerDataEmptyError(serverErrorException, hostFlag)
+        throw serverErrorException
     }
-
-    val netContext = NetContext.get()
-    val netProvider = netContext.hostConfigProvider(hostFlag)
 
     return if (!result.isSuccess) { //检测响应码是否正确
 
-        netProvider.aipHandler()?.onApiError(result, hostFlag)
+        netProvider.errorListener()?.onApiError(result, hostFlag)
         CallResult.Error(createApiException(result, hostFlag, netProvider))
 
     } else if (requireNonNullData) { //如果约定必须返回的数据却没有返回数据，则认为是服务器错误。
 
         val data: T? = result.data
         if (data == null) {
-            CallResult.Error(ServerErrorException(ServerErrorException.SERVER_NULL_DATA))
+            val error = ServerErrorException(ServerErrorException.EMPTY_SERVER_DATA)
+            netProvider.errorListener()?.onServerDataEmptyError(error, hostFlag)
+            CallResult.Error(error)
         } else {
             CallResult.Success(data)
         }

@@ -14,14 +14,14 @@ internal fun createApiException(
     hostConfigProvider: HostConfigProvider,
 ): Throwable {
 
-    var checkedExceptionFactory = hostConfigProvider.exceptionFactory()
+    var errorFactory = hostConfigProvider.errorFactory()
 
-    if (checkedExceptionFactory == null) {
-        checkedExceptionFactory = hostConfigProvider.exceptionFactory()
+    if (errorFactory == null) {
+        errorFactory = hostConfigProvider.errorFactory()
     }
 
-    if (checkedExceptionFactory != null) {
-        val exception = checkedExceptionFactory.create(result, hostFlag)
+    if (errorFactory != null) {
+        val exception = errorFactory.create(result, hostFlag)
         if (exception != null) {
             return exception
         }

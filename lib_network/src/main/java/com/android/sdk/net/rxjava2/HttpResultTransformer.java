@@ -7,8 +7,8 @@ import com.android.sdk.net.HostConfigProvider;
 import com.android.sdk.net.NetContext;
 import com.android.sdk.net.core.exception.ApiErrorException;
 import com.android.sdk.net.core.exception.ServerErrorException;
-import com.android.sdk.net.core.provider.ApiHandler;
-import com.android.sdk.net.core.result.ExceptionFactory;
+import com.android.sdk.net.core.provider.ErrorListener;
+import com.android.sdk.net.core.result.ErrorFactory;
 import com.android.sdk.net.core.result.Result;
 import com.android.sdk.net.coroutines.CommonInternalKt;
 
@@ -103,24 +103,26 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
         }
     }
 
-
     private Downstream processData(Result<Upstream> rResult) {
-
         NetContext netContext = NetContext.get();
         HostConfigProvider hostConfigProvider = netContext.hostConfigProvider(mHostFlag);
+        ErrorListener errorListener = hostConfigProvider.errorListener();
 
         if (!rResult.isSuccess()) {//检测响应码是否正确
-            ApiHandler apiHandler = hostConfigProvider.aipHandler();
-            if (apiHandler != null) {
-                apiHandler.onApiError(rResult, mHostFlag);
+            if (errorListener != null) {
+                errorListener.onApiError(rResult, mHostFlag);
             }
             throwAs(createException(rResult, mHostFlag, hostConfigProvider));
         }
 
         if (mRequireNonNullData) {
-            //如果约定必须返回的数据却没有返回数据，则认为是服务器错误
+            // 如果约定必须返回的数据却没有返回数据，则认为是服务器错误。
             if (rResult.getData() == null) {
-                throwAs(new ServerErrorException(ServerErrorException.SERVER_NULL_DATA));
+                ServerErrorException throwable = new ServerErrorException(ServerErrorException.EMPTY_SERVER_DATA);
+                if (errorListener != null) {
+                    errorListener.onServerDataEmptyError(throwable, mHostFlag);
+                }
+                throwAs(throwable);
             }
         }
 
@@ -128,16 +130,16 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
     }
 
     private Throwable createException(@NonNull Result<Upstream> rResult, String flag, HostConfigProvider hostConfigProvider) {
-        ExceptionFactory exceptionFactory = NetContext.get().hostConfigProvider(flag).exceptionFactory();
+        ErrorFactory errorFactory = NetContext.get().hostConfigProvider(flag).errorFactory();
 
-        if (exceptionFactory == null) {
-            exceptionFactory = hostConfigProvider.exceptionFactory();
+        if (errorFactory == null) {
+            errorFactory = hostConfigProvider.errorFactory();
         }
 
-        if (exceptionFactory != null) {
-            Exception exception = exceptionFactory.create(rResult, flag);
-            if (exception != null) {
-                return exception;
+        if (errorFactory != null) {
+            Throwable throwable = errorFactory.create(rResult, flag);
+            if (throwable != null) {
+                return throwable;
             }
         }
 

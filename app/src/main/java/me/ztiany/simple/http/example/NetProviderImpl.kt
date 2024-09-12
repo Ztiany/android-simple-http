@@ -1,14 +1,17 @@
 package me.ztiany.simple.http.example
 
 import com.android.sdk.net.core.exception.ApiErrorException
-import com.android.sdk.net.core.provider.ApiHandler
+import com.android.sdk.net.core.exception.ServerErrorException
 import com.android.sdk.net.core.provider.ErrorBodyParser
-import com.android.sdk.net.core.provider.ErrorMessage
+import com.android.sdk.net.core.provider.ErrorListener
+import com.android.sdk.net.core.provider.ErrorMessageConverter
 import com.android.sdk.net.core.provider.HttpConfig
 import com.android.sdk.net.core.provider.PlatformInteractor
+import com.android.sdk.net.core.result.Result
 import com.blankj.utilcode.util.NetworkUtils
 import me.ztiany.simple.http.example.App.Companion.getString
 import okhttp3.OkHttpClient
+import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -25,7 +28,7 @@ internal fun newHttpConfig(): HttpConfig {
         override fun baseUrl() = "https://www.wanandroid.com/"
 
         override fun configRetrofit(
-            okHttpClient: OkHttpClient, builder: Retrofit.Builder
+            okHttpClient: OkHttpClient, builder: Retrofit.Builder,
         ): Boolean {
             return false
         }
@@ -72,7 +75,7 @@ internal fun newMockHttpConfig(): HttpConfig {
         override fun baseUrl() = "https://www.wanandroid.com/"
 
         override fun configRetrofit(
-            okHttpClient: OkHttpClient, builder: Retrofit.Builder
+            okHttpClient: OkHttpClient, builder: Retrofit.Builder,
         ): Boolean {
             return false
         }
@@ -145,8 +148,8 @@ internal fun newMockErrorBodyParser(): ErrorBodyParser {
     }
 }
 
-internal fun newErrorMessage(): ErrorMessage {
-    return object : ErrorMessage {
+internal fun newErrorMessageConverter(): ErrorMessageConverter {
+    return object : ErrorMessageConverter {
         override fun netErrorMessage(exception: Throwable): CharSequence {
             return getString(R.string.error_net_error)
         }
@@ -177,7 +180,19 @@ internal fun newErrorMessage(): ErrorMessage {
     }
 }
 
-internal fun newApiHandler(): ApiHandler = ApiHandler { result, hostFlag ->
-    //登录状态已过期，请重新登录、账号在其他设备登陆
-    Timber.d("ApiHandler result: $result, hostFlag: $hostFlag")
+internal fun newErrorHandler() = object : ErrorListener {
+
+    override fun onApiError(result: Result<*>, hostFlag: String) {
+        //登录状态已过期，请重新登录、账号在其他设备登陆
+        Timber.d("ApiHandler result: $result, hostFlag: $hostFlag")
+    }
+
+    override fun onServerDataEmptyError(exception: ServerErrorException, hostFlag: String) {
+
+    }
+
+    override fun onServerDataParseError(exception: ServerErrorException, body: ResponseBody, hostFlag: String) {
+
+    }
+
 }

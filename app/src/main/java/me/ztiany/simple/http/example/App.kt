@@ -17,18 +17,18 @@ class App : Application() {
         Timber.plant(Timber.DebugTree())
 
         NetContext.get().init(this) {
-            errorMessage(newErrorMessage())
+            errorMessageConverter(newErrorMessageConverter())
             platformInteractor(newPlatformInteractor())
         }.setDefaultHostConfig {
             httpConfig(newHttpConfig())
-            aipHandler(newApiHandler())
-            errorBodyHandler(newErrorBodyParser())
-            exceptionFactory { _, _ -> null }
+            errorListener(newErrorHandler())
+            errorBodyParser(newErrorBodyParser())
+            errorFactory { _, _ -> null }
         }.addHostConfig("Mock"){
             httpConfig(newMockHttpConfig())
-            aipHandler(newApiHandler())
-            errorBodyHandler(newMockErrorBodyParser())
-            exceptionFactory { _, _ -> null }
+            errorListener(newErrorHandler())
+            errorBodyParser(newMockErrorBodyParser())
+            errorFactory { _, _ -> null }
         }
     }
 

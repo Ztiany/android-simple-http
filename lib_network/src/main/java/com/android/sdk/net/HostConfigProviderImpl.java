@@ -3,18 +3,18 @@ package com.android.sdk.net;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.android.sdk.net.core.provider.ApiHandler;
+import com.android.sdk.net.core.provider.ErrorListener;
 import com.android.sdk.net.core.provider.ErrorBodyParser;
 import com.android.sdk.net.core.provider.HttpConfig;
-import com.android.sdk.net.core.result.ExceptionFactory;
+import com.android.sdk.net.core.result.ErrorFactory;
 import com.android.sdk.net.coroutines.CoroutinesResultPostProcessor;
 import com.android.sdk.net.rxjava2.RxResultPostTransformer;
 
 final class HostConfigProviderImpl implements HostConfigProvider {
 
-    ExceptionFactory mExceptionFactory;
+    ErrorFactory mErrorFactory;
 
-    ApiHandler mApiHandler;
+    ErrorListener mErrorListener;
 
     HttpConfig mHttpConfig;
 
@@ -26,8 +26,8 @@ final class HostConfigProviderImpl implements HostConfigProvider {
 
     @Nullable
     @Override
-    public ApiHandler aipHandler() {
-        return mApiHandler;
+    public ErrorListener errorListener() {
+        return mErrorListener;
     }
 
     @NonNull
@@ -38,8 +38,8 @@ final class HostConfigProviderImpl implements HostConfigProvider {
 
     @Nullable
     @Override
-    public ExceptionFactory exceptionFactory() {
-        return mExceptionFactory;
+    public ErrorFactory errorFactory() {
+        return mErrorFactory;
     }
 
 

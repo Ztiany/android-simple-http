@@ -35,7 +35,7 @@ class ServiceFactory internal constructor(
         if (!httpConfig.configRetrofit(httpClient, builder)) {
             builder.baseUrl(mBaseUrl)
                 .client(httpClient)
-                .addConverterFactory(ErrorJsonLenientConverterFactory(GsonConverterFactory.create(GsonUtils.gson())))
+                .addConverterFactory(ErrorJsonLenientConverterFactory(hostFlag, GsonConverterFactory.create(GsonUtils.gson())))
             if (RxJavaChecker.hasRxJava2()) {
                 builder.addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
             }
