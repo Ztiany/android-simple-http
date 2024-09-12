@@ -190,7 +190,7 @@ internal fun newErrorHandler() = object : ErrorListener {
 
     }
 
-    override fun onServerDataParseError(exception: ServerErrorException, body: ResponseBody, hostFlag: String) {
+    override fun onServerDataParseError(exception: ServerErrorException, hostFlag: String) {
 
     }
 

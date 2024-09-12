@@ -18,6 +18,6 @@ public interface ErrorListener {
 
     void onServerDataEmptyError(@NonNull ServerErrorException exception, @NotNull String hostFlag);
 
-    void onServerDataParseError(@NonNull ServerErrorException exception, @NotNull ResponseBody body, @NotNull String hostFlag);
+    void onServerDataParseError(@NonNull ServerErrorException exception, @NotNull String hostFlag);
 
 }

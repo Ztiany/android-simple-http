@@ -65,7 +65,7 @@ public class ErrorJsonLenientConverterFactory extends Converter.Factory {
                 ServerErrorException serverErrorException = new ServerErrorException(ServerErrorException.DATA_PARSE_ERROR);
                 ErrorListener errorListener = NetContext.get().hostConfig(mHostFlag).errorListener();
                 if (errorListener != null) {
-                    errorListener.onServerDataParseError(serverErrorException, value, mHostFlag);
+                    errorListener.onServerDataParseError(serverErrorException, mHostFlag);
                 }
                 throw serverErrorException;
             }
