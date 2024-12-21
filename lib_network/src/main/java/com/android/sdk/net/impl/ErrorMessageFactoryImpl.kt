@@ -5,7 +5,6 @@ import com.android.sdk.net.NetContext
 import com.android.sdk.net.core.exception.ApiErrorException
 import com.android.sdk.net.core.exception.ErrorMessageFactory
 import com.android.sdk.net.core.exception.ServerErrorException
-import com.android.sdk.net.rxjava2.RxJavaChecker
 import retrofit2.HttpException
 import timber.log.Timber
 import java.io.IOException
@@ -42,7 +41,7 @@ internal class ErrorMessageFactoryImpl : ErrorMessageFactory {
             if (TextUtils.isEmpty(message)) {
                 message = errorMessageConverter.apiErrorMessage(exception)
             }
-        } else if (RxJavaChecker.hasRxJava2() && exception is NoSuchElementException) {
+        } else if (exception is NoSuchElementException/* rxjava single?*/) {
             message = errorMessageConverter.serverInternalErrorMessage(exception)
         }
 

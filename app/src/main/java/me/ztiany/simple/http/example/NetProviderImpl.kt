@@ -8,12 +8,13 @@ import com.android.sdk.net.core.provider.ErrorMessageConverter
 import com.android.sdk.net.core.provider.HttpConfig
 import com.android.sdk.net.core.provider.PlatformInteractor
 import com.blankj.utilcode.util.NetworkUtils
+import io.reactivex.schedulers.Schedulers
 import me.ztiany.simple.http.example.App.Companion.getString
 import okhttp3.OkHttpClient
-import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -27,8 +28,10 @@ internal fun newHttpConfig(): HttpConfig {
         override fun baseUrl() = "https://www.wanandroid.com/"
 
         override fun configRetrofit(
-            okHttpClient: OkHttpClient, builder: Retrofit.Builder,
+            okHttpClient: OkHttpClient,
+            builder: Retrofit.Builder,
         ): Boolean {
+            builder.addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
             return false
         }
 
@@ -76,6 +79,7 @@ internal fun newMockHttpConfig(): HttpConfig {
         override fun configRetrofit(
             okHttpClient: OkHttpClient, builder: Retrofit.Builder,
         ): Boolean {
+            builder.addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
             return false
         }
 

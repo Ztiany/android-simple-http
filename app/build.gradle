@@ -50,6 +50,7 @@ dependencies {
     implementation "com.squareup.okhttp3:logging-interceptor:4.12.0"
 
     implementation project(':lib_network')
+    implementation project(':lib_network_rxjava2')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.24"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1"

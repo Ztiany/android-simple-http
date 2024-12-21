@@ -1,6 +1,6 @@
 package com.android.sdk.net.core.registry
 
-fun <T> ComponentRetriever.requireComponent(clazz: Class<T>): T {
+fun <T : Any> ComponentRetriever.requireComponent(clazz: Class<T>): T {
     return getComponent(clazz) ?: throw IllegalStateException("Component not found: $clazz")
 }
 

@@ -4,23 +4,12 @@ import com.android.sdk.net.ServiceContext
 import com.android.sdk.net.core.result.Result
 import com.android.sdk.net.coroutines.CallResult
 import com.android.sdk.net.coroutines.RetryDeterminer
-import com.android.sdk.net.optional.Optional
-import com.android.sdk.net.rxjava2.internalOptionalExtractor
-import com.android.sdk.net.rxjava2.internalResultChecker
-import com.android.sdk.net.rxjava2.internalResultExtractor
-import io.reactivex.Flowable
-import io.reactivex.Observable
-import io.reactivex.Single
 import kotlinx.coroutines.CancellationException
 
 internal class ServiceContextImpl<Service>(
     override val hostFlag: String,
     override val service: Service,
 ) : ServiceContext<Service> {
-
-    ///////////////////////////////////////////////////////////////////////////
-    // Coroutines
-    ///////////////////////////////////////////////////////////////////////////
 
     override suspend fun <T : Any> apiCall(call: suspend Service.() -> Result<T>): CallResult<T> {
         return com.android.sdk.net.coroutines.nonnull.internalApiCall(hostFlag) {
