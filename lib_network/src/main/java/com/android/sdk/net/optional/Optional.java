@@ -320,7 +320,7 @@ public final class Optional<T> {
     @Override
     public String toString() {
         if (isPresent()) {
-            return "Optional[" + value.toString() + "]";
+            return "Optional[" + value + "]";
         }
 
         return "Optional.empty";

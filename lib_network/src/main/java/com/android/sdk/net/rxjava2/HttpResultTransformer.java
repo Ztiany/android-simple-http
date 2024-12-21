@@ -7,6 +7,7 @@ import com.android.sdk.net.HostConfig;
 import com.android.sdk.net.NetContext;
 import com.android.sdk.net.core.exception.ApiErrorException;
 import com.android.sdk.net.core.exception.ServerErrorException;
+import com.android.sdk.net.core.json.GsonUtils;
 import com.android.sdk.net.core.provider.ErrorListener;
 import com.android.sdk.net.core.result.ApiErrorFactory;
 import com.android.sdk.net.core.result.Result;
@@ -108,7 +109,7 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
         HostConfig hostConfig = netContext.hostConfig(mHostFlag);
         ErrorListener errorListener = hostConfig.errorListener();
 
-        if (!rResult.isSuccess()) {//检测响应码是否正确
+        if (!rResult.isSuccess()) {
             ApiErrorException exception = createException(rResult, mHostFlag, hostConfig);
             if (errorListener != null) {
                 errorListener.onApiErrorException(exception, mHostFlag);
@@ -117,7 +118,7 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
         }
 
         if (mRequireNonNullData) {
-            // 如果约定必须返回的数据却没有返回数据，则认为是服务器错误。
+            // If the data that must be returned is not returned, it is considered a server error.
             if (rResult.getData() == null) {
                 ServerErrorException throwable = new ServerErrorException(ServerErrorException.EMPTY_SERVER_DATA);
                 if (errorListener != null) {
@@ -144,7 +145,7 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
             }
         }
 
-        return new ApiErrorException(rResult.getCode(), rResult.getMessage(), flag);
+        return new ApiErrorException(rResult.getCode(), rResult.getMessage(), GsonUtils.gson().toJson(rResult), flag);
     }
 
     private <E extends Throwable> void throwAs(Throwable throwable) throws E {

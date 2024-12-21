@@ -18,4 +18,5 @@ public interface Consumer<T> {
      * @param t the input argument
      */
     void accept(T t);
+
 }

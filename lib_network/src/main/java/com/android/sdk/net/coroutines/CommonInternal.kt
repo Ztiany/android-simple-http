@@ -3,6 +3,7 @@ package com.android.sdk.net.coroutines
 import com.android.sdk.net.HostConfig
 import com.android.sdk.net.NetContext
 import com.android.sdk.net.core.exception.ApiErrorException
+import com.android.sdk.net.core.json.GsonUtils
 import com.android.sdk.net.core.result.Result
 import kotlinx.coroutines.CancellationException
 import retrofit2.HttpException
@@ -27,7 +28,7 @@ internal fun createApiException(
         }
     }
 
-    return ApiErrorException(result.code, result.message, hostFlag)
+    return ApiErrorException(result.code, result.message, GsonUtils.gson().toJson(result), hostFlag)
 }
 
 internal fun postAction(hostFlag: String): CoroutinesResultPostProcessor {

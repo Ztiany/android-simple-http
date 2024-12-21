@@ -2,9 +2,10 @@ package com.android.sdk.net.core.progress;
 
 import android.os.SystemClock;
 
+import androidx.annotation.NonNull;
+
 import java.io.IOException;
 
-import androidx.annotation.NonNull;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okio.Buffer;
@@ -12,6 +13,7 @@ import okio.BufferedSink;
 import okio.ForwardingSink;
 import okio.Okio;
 import okio.Sink;
+import timber.log.Timber;
 
 class ProgressRequestBody extends RequestBody {
 
@@ -36,7 +38,7 @@ class ProgressRequestBody extends RequestBody {
         try {
             return mDelegate.contentLength();
         } catch (IOException e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
         return -1;
     }
@@ -50,7 +52,7 @@ class ProgressRequestBody extends RequestBody {
             mDelegate.writeTo(mBufferedSink);
             mBufferedSink.flush();
         } catch (IOException e) {
-            e.printStackTrace();
+            Timber.e(e);
             mProgressListener.onLoadFail(e);
             throw e;
         }
@@ -61,7 +63,6 @@ class ProgressRequestBody extends RequestBody {
         private long totalBytesRead = 0L;
         private long lastRefreshTime = 0L;  //最后一次刷新的时间
         private long mContentLength;
-        private boolean mIsFinish;
 
         CountingSink(Sink delegate) {
             super(delegate);
@@ -72,7 +73,7 @@ class ProgressRequestBody extends RequestBody {
             try {
                 super.write(source, byteCount);
             } catch (IOException e) {
-                e.printStackTrace();
+                Timber.e(e);
                 mProgressListener.onLoadFail(e);
                 throw e;
             }
@@ -82,11 +83,12 @@ class ProgressRequestBody extends RequestBody {
             totalBytesRead += byteCount;
 
             long curTime = SystemClock.elapsedRealtime();
-            mIsFinish = totalBytesRead == mContentLength;
-            if (curTime - lastRefreshTime >= mRefreshTime || mIsFinish) {
-                mProgressListener.onProgress(totalBytesRead, mContentLength, totalBytesRead * 1.0F / mContentLength, mIsFinish);
+            boolean isFinish = totalBytesRead == mContentLength;
+            if (curTime - lastRefreshTime >= mRefreshTime || isFinish) {
+                mProgressListener.onProgress(totalBytesRead, mContentLength, totalBytesRead * 1.0F / mContentLength, isFinish);
                 lastRefreshTime = curTime;
             }
         }
     }
+
 }

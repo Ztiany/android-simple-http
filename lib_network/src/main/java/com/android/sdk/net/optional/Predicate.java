@@ -2,7 +2,7 @@ package com.android.sdk.net.optional;
 
 /**
  * Represents a predicate (boolean-valued function) of one argument.
- *
+ * <p>
  * This is a functional interface whose functional method is {@code #test(Object)}.
  *
  * @param <T> the type of the input to the predicate
@@ -16,4 +16,5 @@ public interface Predicate<T> {
      * @return {@code true} if the input argument matches the predicate, otherwise {@code false}
      */
     boolean test(T t);
+
 }

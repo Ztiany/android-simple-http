@@ -18,4 +18,5 @@ public interface Function<T, R> {
      * @return the function result
      */
     R apply(T t);
+
 }

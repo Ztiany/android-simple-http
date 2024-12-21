@@ -49,7 +49,7 @@ class ResultHandlers {
     private static final ResultChecker RESULT_CHECKER = new ResultChecker();
 
     /**
-     * 返回一个 Transformer，用于统一处理网络请求返回的数据。
+     * A transformer that processes the data returned by the network request.
      */
     @SuppressWarnings("unchecked")
     private static <Upstream, T extends Result<Upstream>> HttpResultTransformer<Upstream, Upstream, T> _resultExtractor() {
@@ -61,8 +61,7 @@ class ResultHandlers {
     }
 
     /**
-     * 与 {@link #resultExtractor()} 的行为类似，但是最后把 HttpResult&lt;T&gt; 中的数据 T 用 {@link Optional} 包装后再转发到下游。
-     * 适用于 HttpResult.getData() 可能为 null 的情况
+     * The behavior is similar to {@link #resultExtractor()}, but the data T in HttpResult&lt;T&gt; is wrapped in {@link Optional} before being forwarded to the downstream.
      */
     @SuppressWarnings("unchecked")
     private static <Upstream, T extends Result<Upstream>> HttpResultTransformer<Upstream, Optional<Upstream>, T> _optionalExtractor() {
@@ -74,7 +73,7 @@ class ResultHandlers {
     }
 
     /**
-     * 不提取 HttpResult&lt;T&gt; 中的数据 T，只进行网络异常、空数据异常、错误 JSON 格式异常处理。
+     * Does not extract the data T in HttpResult&lt;T&gt;, only handles network exceptions, empty data exceptions, and error JSON format exceptions.
      */
     @SuppressWarnings("unchecked")
     private static <Upstream, T extends Result<Upstream>> HttpResultTransformer<Upstream, T, T> _resultChecker() {

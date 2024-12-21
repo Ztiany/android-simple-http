@@ -1,7 +1,7 @@
 package com.android.sdk.net.coroutines
 
 /**
- *@author Ztiany
+ * @author Ztiany
  */
 interface CoroutinesResultPostProcessor {
 

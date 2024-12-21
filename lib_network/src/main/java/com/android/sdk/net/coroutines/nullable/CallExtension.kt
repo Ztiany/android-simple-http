@@ -5,7 +5,6 @@ import com.android.sdk.net.core.result.Result
 import com.android.sdk.net.coroutines.CallResult
 import com.android.sdk.net.coroutines.RetryDeterminer
 import com.android.sdk.net.coroutines.apiCallInternal
-import timber.log.Timber
 
 internal suspend fun <T : Any?> internalApiCallNullable(
     hostFlag: String = NetContext.DEFAULT_CONFIG,
@@ -26,7 +25,6 @@ internal suspend fun <T : Any?> internalApiCallRetryNullable(
 
     while (true) {
         if (result is CallResult.Error && retryDeterminer(++count, result.error)) {
-            Timber.d("executeApiCallRetry at ${++count}")
             result = apiCallInternal(hostFlag, false, call)
         } else {
             return result

@@ -2,9 +2,10 @@ package com.android.sdk.net.core.progress;
 
 import android.os.SystemClock;
 
+import androidx.annotation.NonNull;
+
 import java.io.IOException;
 
-import androidx.annotation.NonNull;
 import okhttp3.MediaType;
 import okhttp3.ResponseBody;
 import okio.Buffer;
@@ -12,6 +13,7 @@ import okio.BufferedSource;
 import okio.ForwardingSource;
 import okio.Okio;
 import okio.Source;
+import timber.log.Timber;
 
 class ProgressResponseBody extends ResponseBody {
 
@@ -36,6 +38,7 @@ class ProgressResponseBody extends ResponseBody {
         return mDelegate.contentLength();
     }
 
+    @NonNull
     @Override
     public BufferedSource source() {
         if (mBufferedSource == null) {
@@ -56,7 +59,7 @@ class ProgressResponseBody extends ResponseBody {
                 try {
                     bytesRead = super.read(sink, byteCount);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Timber.e(e);
                     mProgressListener.onLoadFail(e);
                     throw e;
                 }
@@ -76,4 +79,5 @@ class ProgressResponseBody extends ResponseBody {
             }
         };
     }
+
 }

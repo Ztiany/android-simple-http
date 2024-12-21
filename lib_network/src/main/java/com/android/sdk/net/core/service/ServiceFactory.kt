@@ -27,7 +27,7 @@ class ServiceFactory internal constructor(
 
     private val mBaseUrl: String = httpConfig.baseUrl()
 
-    private val mRetrofit: Retrofit
+    internal val mRetrofit: Retrofit
 
     init {
         val builder = Retrofit.Builder()
@@ -50,40 +50,56 @@ class ServiceFactory internal constructor(
         return mBaseUrl
     }
 
-    private fun checkHostFlag() {
+    private fun checkIfDefaultHostFlag() {
         if (hostFlag != NetContext.DEFAULT_CONFIG) {
-            throw IllegalArgumentException("ServiceFactory with hostFlag=$hostFlag can't create default service. please use createServiceContext() instead.")
+            throw IllegalArgumentException("ServiceFactory with hostFlag $hostFlag can't create default service. please use createServiceContext() instead.")
         }
     }
 
     fun <T> createDefault(clazz: Class<T>): T {
-        checkHostFlag()
+        checkIfDefaultHostFlag()
         return mRetrofit.create(clazz)
     }
 
-    fun <T> createDefaultWithUploadProgress(clazz: Class<T>, urlProgressListener: UrlProgressListener): T {
-        checkHostFlag()
-        return createWithUploadProgress(urlProgressListener, clazz)
+    fun <T> createDefaultWithUploadProgress(
+        clazz: Class<T>,
+        refreshTime: Int,
+        urlProgressListener: UrlProgressListener,
+    ): T {
+        checkIfDefaultHostFlag()
+        return createWithUploadProgress(clazz, refreshTime, urlProgressListener)
     }
 
-    fun <T> createDefaultWithDownloadProgress(clazz: Class<T>, urlProgressListener: UrlProgressListener): T {
-        checkHostFlag()
-        return createWithDownloadProgress(urlProgressListener, clazz)
+    fun <T> createDefaultWithDownloadProgress(
+        clazz: Class<T>,
+        refreshTime: Int,
+        urlProgressListener: UrlProgressListener,
+    ): T {
+        checkIfDefaultHostFlag()
+        return createWithDownloadProgress(clazz, refreshTime, urlProgressListener)
     }
 
-    private fun <T> createWithUploadProgress(urlProgressListener: UrlProgressListener, clazz: Class<T>): T {
+    private fun <T> createWithUploadProgress(
+        clazz: Class<T>,
+        refreshTime: Int,
+        urlProgressListener: UrlProgressListener,
+    ): T {
         val okHttpClient = httpClient
             .newBuilder()
-            .addNetworkInterceptor(RequestProgressInterceptor(urlProgressListener))
+            .addNetworkInterceptor(RequestProgressInterceptor(urlProgressListener, refreshTime))
             .build()
         val newRetrofit = mRetrofit.newBuilder().client(okHttpClient).build()
         return newRetrofit.create(clazz)
     }
 
-    private fun <T> createWithDownloadProgress(urlProgressListener: UrlProgressListener, clazz: Class<T>): T {
+    private fun <T> createWithDownloadProgress(
+        clazz: Class<T>,
+        refreshTime: Int,
+        urlProgressListener: UrlProgressListener,
+    ): T {
         val okHttpClient = httpClient
             .newBuilder()
-            .addNetworkInterceptor(ResponseProgressInterceptor(urlProgressListener))
+            .addNetworkInterceptor(ResponseProgressInterceptor(urlProgressListener, refreshTime))
             .build()
         val newRetrofit = mRetrofit.newBuilder().client(okHttpClient).build()
         return newRetrofit.create(clazz)
@@ -93,12 +109,20 @@ class ServiceFactory internal constructor(
         return ServiceContextImpl(hostFlag, mRetrofit.create(clazz))
     }
 
-    fun <T> createServiceContextWithUploadProgress(clazz: Class<T>, urlProgressListener: UrlProgressListener): ServiceContext<T> {
-        return ServiceContextImpl(hostFlag, createWithUploadProgress(urlProgressListener, clazz))
+    fun <T> createServiceContextWithUploadProgress(
+        clazz: Class<T>,
+        refreshTime: Int,
+        urlProgressListener: UrlProgressListener,
+    ): ServiceContext<T> {
+        return ServiceContextImpl(hostFlag, createWithUploadProgress(clazz, refreshTime, urlProgressListener))
     }
 
-    fun <T> createServiceContextWithDownloadProgress(clazz: Class<T>, urlProgressListener: UrlProgressListener): ServiceContext<T> {
-        return ServiceContextImpl(hostFlag, createWithDownloadProgress(urlProgressListener, clazz))
+    fun <T> createServiceContextWithDownloadProgress(
+        clazz: Class<T>,
+        refreshTime: Int,
+        urlProgressListener: UrlProgressListener,
+    ): ServiceContext<T> {
+        return ServiceContextImpl(hostFlag, createWithDownloadProgress(clazz, refreshTime, urlProgressListener))
     }
 
 }

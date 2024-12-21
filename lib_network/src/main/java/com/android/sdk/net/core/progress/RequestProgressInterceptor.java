@@ -20,10 +20,15 @@ public class RequestProgressInterceptor implements Interceptor {
     private int mRefreshTime = DEFAULT_REFRESH_TIME;
 
     public RequestProgressInterceptor(UrlProgressListener interceptorProgressListener) {
+        this(interceptorProgressListener, DEFAULT_REFRESH_TIME);
+    }
+
+    public RequestProgressInterceptor(UrlProgressListener interceptorProgressListener, int refreshTime) {
         mInterceptorProgressListener = interceptorProgressListener;
         if (mInterceptorProgressListener == null) {
             throw new NullPointerException();
         }
+        setRefreshTime(refreshTime);
     }
 
     public void setRefreshTime(int refreshTime) {
@@ -50,8 +55,8 @@ public class RequestProgressInterceptor implements Interceptor {
                     }
 
                     @Override
-                    public void onLoadFail(Exception e) {
-                        Dispatcher.dispatch(() -> mInterceptorProgressListener.onError(key, e));
+                    public void onLoadFail(@NonNull Exception exception) {
+                        Dispatcher.dispatch(() -> mInterceptorProgressListener.onError(key, exception));
                     }
                 }))
                 .build();

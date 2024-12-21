@@ -35,10 +35,10 @@ public class ServerErrorException extends RuntimeException {
     @Override
     public String toString() {
         String string = super.toString();
-        return string + "ErrorType = " + transform();
+        return string + "ErrorType = " + name();
     }
 
-    private String transform() {
+    private String name() {
         return switch (mErrorType) {
             case DATA_PARSE_ERROR -> "DATA_PARSE_ERROR";
             case EMPTY_SERVER_DATA -> "EMPTY_SERVER_DATA";

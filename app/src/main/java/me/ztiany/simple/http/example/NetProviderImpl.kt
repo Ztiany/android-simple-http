@@ -33,7 +33,7 @@ internal fun newHttpConfig(): HttpConfig {
         }
 
         override fun configHttp(builder: OkHttpClient.Builder) {
-            //常规配置
+            // 常规配置
             builder
                 .connectTimeout(CONNECTION_TIME_OUT.toLong(), TimeUnit.SECONDS)
                 .readTimeout(IO_TIME_OUT.toLong(), TimeUnit.SECONDS)
@@ -42,13 +42,13 @@ internal fun newHttpConfig(): HttpConfig {
         }
 
         private fun configDebugIfNeeded(builder: OkHttpClient.Builder) {
-            //打印日志
+            // 打印日志
             val httpLoggingInterceptor = HttpLoggingInterceptor { message -> Timber.tag("===OkHttp===").i(message) }
             httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
             builder.addInterceptor(httpLoggingInterceptor)
 
-            builder.authenticator { _, _ -> //下面的 newApiHandler 中已经处理，这里不需要再处理了。
-                //errorHandler.handleGlobalError(ApiHelper.buildAuthenticationExpiredException())
+            builder.authenticator { _, _ -> // 下面的 newApiHandler 中已经处理，这里不需要再处理了。
+                // errorHandler.handleGlobalError(ApiHelper.buildAuthenticationExpiredException())
                 null
             }
         }
@@ -56,7 +56,7 @@ internal fun newHttpConfig(): HttpConfig {
 
 }
 
-//假数据
+// fake response
 private const val FAKE_BODY_NO_ENTITY = "{\"status\":0,\"msg\":\"消息\"}"
 private const val FAKE_BODY_NO_ENTITY_2 = "{\"status\":30,\"message\":\"我是一个错误的消息\"}"
 private const val FAKE_BODY_NULL_ENTITY = "{\"status\":0,\"msg\":\"消息\",\"data\":null}"
@@ -80,7 +80,7 @@ internal fun newMockHttpConfig(): HttpConfig {
         }
 
         override fun configHttp(builder: OkHttpClient.Builder) {
-            //常规配置
+            // 常规配置
             builder
                 .connectTimeout(CONNECTION_TIME_OUT.toLong(), TimeUnit.SECONDS)
                 .readTimeout(IO_TIME_OUT.toLong(), TimeUnit.SECONDS)
@@ -89,28 +89,27 @@ internal fun newMockHttpConfig(): HttpConfig {
         }
 
         private fun configDebugIfNeeded(builder: OkHttpClient.Builder) {
-            //打印日志
+            // 打印日志
             val httpLoggingInterceptor = HttpLoggingInterceptor { message -> Timber.tag("===OkHttp===").i(message) }
             httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
             builder.addInterceptor(httpLoggingInterceptor)
 
-            //模拟
+            // 模拟
             builder.addInterceptor {
                 val response = it.proceed(it.request())
-                //response.newBuilder().code(200).message("OK").body(FAKE_BODY_NUL.toResponseBody())
+                // response.newBuilder().code(200).message("OK").body(FAKE_BODY_NUL.toResponseBody())
                 response.newBuilder().code(455).message("Internal Error").body(FAKE_BODY_NO_ENTITY_2.toResponseBody())
                     .build()
             }
 
-            builder.authenticator { _, _ -> //下面的 newApiHandler 中已经处理，这里不需要再处理了。
-                //errorHandler.handleGlobalError(ApiHelper.buildAuthenticationExpiredException())
+            builder.authenticator { _, _ -> // 下面的 newApiHandler 中已经处理，这里不需要再处理了。
+                // errorHandler.handleGlobalError(ApiHelper.buildAuthenticationExpiredException())
                 null
             }
         }
     }
 
 }
-
 
 fun newPlatformInteractor(): PlatformInteractor {
     return object : PlatformInteractor {
@@ -182,7 +181,6 @@ internal fun newErrorMessageConverter(): ErrorMessageConverter {
 internal fun newErrorHandler() = object : ErrorListener {
 
     override fun onApiErrorException(apiErrorException: ApiErrorException, hostFlag: String) {
-        //登录状态已过期，请重新登录、账号在其他设备登陆
         Timber.d("ApiHandler result: $apiErrorException, hostFlag: $hostFlag")
     }
 

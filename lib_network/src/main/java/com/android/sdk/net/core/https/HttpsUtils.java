@@ -25,7 +25,7 @@ import javax.net.ssl.X509TrustManager;
 import timber.log.Timber;
 
 /**
- * @see <a href='https://github.com/hongyangAndroid/okhttputils'>hongyangAndroid okhttputils</a>.
+ * @see <a href='https://github.com/hongyangAndroid/okhttputils'>HongYang Android OkHttpUtils</a>.
  */
 public class HttpsUtils {
 
@@ -141,7 +141,6 @@ public class HttpsUtils {
         }
         return null;
     }
-
 
     @SuppressLint("CustomX509TrustManager")
     private static class SafeTrustManager implements X509TrustManager {
