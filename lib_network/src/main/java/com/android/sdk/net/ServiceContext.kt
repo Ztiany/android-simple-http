@@ -10,6 +10,8 @@ import io.reactivex.Single
 
 interface ServiceContext<Service> {
 
+    val hostFlag: String
+
     val service: Service
 
     ///////////////////////////////////////////////////////////////////////////
@@ -20,7 +22,7 @@ interface ServiceContext<Service> {
      * Call an API and get the result wrapped in [CallResult].
      */
     suspend fun <T : Any> apiCall(
-        call: suspend Service.() -> Result<T>
+        call: suspend Service.() -> Result<T>,
     ): CallResult<T>
 
     /**
@@ -45,7 +47,7 @@ interface ServiceContext<Service> {
      * ```
      */
     suspend fun <T : Any> executeApiCall(
-        call: suspend Service.() -> Result<T>
+        call: suspend Service.() -> Result<T>,
     ): T
 
     suspend fun <T : Any?> apiCallNullable(
@@ -53,7 +55,7 @@ interface ServiceContext<Service> {
          * Note: At present(retrofit:2.9.0)，Defining return type of suspend api method as T? is not supported.
          * Responses of Http like 204 will cause an Exception: `kotlin.KotlinNullPointerException: Response from xxx was null but response body type was declared as non-null KotlinNullPointerException`.
          */
-        call: suspend Service.() -> Result<T>?
+        call: suspend Service.() -> Result<T>?,
     ): CallResult<T?>
 
     suspend fun <T : Any?> executeApiCallNullable(
@@ -61,17 +63,17 @@ interface ServiceContext<Service> {
          * Note: At present(retrofit:2.9.0)，Defining return type of suspend api method as T? is not supported.
          * Responses of Http like 204 will cause an Exception: `kotlin.KotlinNullPointerException: Response from xxx was null but response body type was declared as non-null KotlinNullPointerException`.
          */
-        call: suspend Service.() -> Result<T>?
+        call: suspend Service.() -> Result<T>?,
     ): T?
 
     suspend fun <T : Any> apiCall(
         retryDeterminer: RetryDeterminer,
-        call: suspend Service.() -> Result<T>
+        call: suspend Service.() -> Result<T>,
     ): CallResult<T>
 
     suspend fun <T : Any> executeApiCall(
         retryDeterminer: RetryDeterminer,
-        call: suspend Service.() -> Result<T>
+        call: suspend Service.() -> Result<T>,
     ): T
 
     suspend fun <T : Any?> apiCallNullable(
@@ -80,7 +82,7 @@ interface ServiceContext<Service> {
          * Note: At present(retrofit:2.9.0)，Defining return type of suspend api method as T? is not supported.
          * Responses of Http like 204 will cause an Exception: `kotlin.KotlinNullPointerException: Response from xxx was null but response body type was declared as non-null KotlinNullPointerException`.
          */
-        call: suspend Service.() -> Result<T>?
+        call: suspend Service.() -> Result<T>?,
     ): CallResult<T?>
 
     suspend fun <T : Any?> executeApiCallNullable(
@@ -89,29 +91,7 @@ interface ServiceContext<Service> {
          * Note: At present(retrofit:2.9.0)，Defining return type of suspend api method as T? is not supported.
          * Responses of Http like 204 will cause an Exception: `kotlin.KotlinNullPointerException: Response from xxx was null but response body type was declared as non-null KotlinNullPointerException`.
          */
-        call: suspend Service.() -> Result<T>?
+        call: suspend Service.() -> Result<T>?,
     ): T?
-
-    ///////////////////////////////////////////////////////////////////////////
-    // Rx2
-    ///////////////////////////////////////////////////////////////////////////
-
-    fun <T : Result<E>, E> Observable<T>.optionalExtractor(): Observable<Optional<E>>
-
-    fun <T : Result<E>, E> Observable<T>.resultExtractor(): Observable<E>
-
-    fun <E, T : Result<E>> Observable<T>.resultChecker(): Observable<Result<E>>
-
-    fun <T : Result<E>, E> Flowable<T>.optionalExtractor(): Flowable<Optional<E>>
-
-    fun <T : Result<E>, E> Flowable<T>.resultExtractor(): Flowable<E>
-
-    fun <E, T : Result<E>> Flowable<T>.resultChecker(): Flowable<Result<E>>
-
-    fun <T : Result<E>, E> Single<T>.optionalExtractor(): Single<Optional<E>>
-
-    fun <T : Result<E>, E> Single<T>.resultExtractor(): Single<E>
-
-    fun <E, T : Result<E>> Single<T>.resultChecker(): Single<Result<E>>
 
 }

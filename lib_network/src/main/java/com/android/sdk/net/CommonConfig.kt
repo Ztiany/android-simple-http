@@ -2,11 +2,13 @@ package com.android.sdk.net
 
 import com.android.sdk.net.core.provider.ErrorMessageConverter
 import com.android.sdk.net.core.provider.PlatformInteractor
+import com.android.sdk.net.core.registry.ComponentRetriever
+import com.android.sdk.net.core.registry.requireComponent
 
-internal interface CommonConfig {
+interface CommonConfig : ComponentRetriever {
 
-    fun errorMessageConverter(): ErrorMessageConverter
+    fun errorMessageConverter(): ErrorMessageConverter = requireComponent(ErrorMessageConverter::class.java)
 
-    fun platformInteractor(): PlatformInteractor
+    fun platformInteractor(): PlatformInteractor = requireComponent(PlatformInteractor::class.java)
 
 }

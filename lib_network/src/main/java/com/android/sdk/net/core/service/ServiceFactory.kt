@@ -2,18 +2,15 @@ package com.android.sdk.net.core.service
 
 import com.android.sdk.net.NetContext
 import com.android.sdk.net.ServiceContext
-import com.android.sdk.net.ServiceContextImpl
 import com.android.sdk.net.core.json.ErrorJsonLenientConverterFactory
 import com.android.sdk.net.core.json.GsonUtils
 import com.android.sdk.net.core.progress.RequestProgressInterceptor
 import com.android.sdk.net.core.progress.ResponseProgressInterceptor
 import com.android.sdk.net.core.progress.UrlProgressListener
 import com.android.sdk.net.core.provider.HttpConfig
-import com.android.sdk.net.rxjava2.RxJavaChecker
-import io.reactivex.schedulers.Schedulers
+import com.android.sdk.net.impl.ServiceContextImpl
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
 /**
@@ -25,29 +22,25 @@ class ServiceFactory internal constructor(
     httpConfig: HttpConfig,
 ) {
 
-    private val mBaseUrl: String = httpConfig.baseUrl()
+    private val baseUrl: String = httpConfig.baseUrl()
 
-    internal val mRetrofit: Retrofit
+    private val retrofit: Retrofit
 
     init {
         val builder = Retrofit.Builder()
 
         if (!httpConfig.configRetrofit(httpClient, builder)) {
             builder
-                .baseUrl(mBaseUrl)
+                .baseUrl(baseUrl)
                 .client(httpClient)
                 .addConverterFactory(ErrorJsonLenientConverterFactory(hostFlag, GsonConverterFactory.create(GsonUtils.gson())))
-
-            if (RxJavaChecker.hasRxJava2()) {
-                builder.addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
-            }
         }
 
-        mRetrofit = builder.build()
+        retrofit = builder.build()
     }
 
     fun baseUrl(): String {
-        return mBaseUrl
+        return baseUrl
     }
 
     private fun checkIfDefaultHostFlag() {
@@ -58,7 +51,7 @@ class ServiceFactory internal constructor(
 
     fun <T> createDefault(clazz: Class<T>): T {
         checkIfDefaultHostFlag()
-        return mRetrofit.create(clazz)
+        return retrofit.create(clazz)
     }
 
     fun <T> createDefaultWithUploadProgress(
@@ -88,7 +81,7 @@ class ServiceFactory internal constructor(
             .newBuilder()
             .addNetworkInterceptor(RequestProgressInterceptor(urlProgressListener, refreshTime))
             .build()
-        val newRetrofit = mRetrofit.newBuilder().client(okHttpClient).build()
+        val newRetrofit = retrofit.newBuilder().client(okHttpClient).build()
         return newRetrofit.create(clazz)
     }
 
@@ -101,12 +94,12 @@ class ServiceFactory internal constructor(
             .newBuilder()
             .addNetworkInterceptor(ResponseProgressInterceptor(urlProgressListener, refreshTime))
             .build()
-        val newRetrofit = mRetrofit.newBuilder().client(okHttpClient).build()
+        val newRetrofit = retrofit.newBuilder().client(okHttpClient).build()
         return newRetrofit.create(clazz)
     }
 
     fun <T> createServiceContext(clazz: Class<T>): ServiceContext<T> {
-        return ServiceContextImpl(hostFlag, mRetrofit.create(clazz))
+        return ServiceContextImpl(hostFlag, retrofit.create(clazz))
     }
 
     fun <T> createServiceContextWithUploadProgress(

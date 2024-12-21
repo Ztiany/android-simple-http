@@ -28,7 +28,7 @@ internal fun createApiException(
         }
     }
 
-    return ApiErrorException(result.code, result.message, GsonUtils.gson().toJson(result), hostFlag)
+    return ApiErrorException(result.code, result.message, GsonUtils.toJson(result), hostFlag)
 }
 
 internal fun postAction(hostFlag: String): CoroutinesResultPostProcessor {
@@ -41,7 +41,7 @@ private val EMPTY_ENTRY = object : CoroutinesResultPostProcessor {
     }
 }
 
-internal fun transformHttpException(hostFlag: String, throwable: Throwable): Throwable {
+fun transformHttpException(hostFlag: String, throwable: Throwable): Throwable {
     // Catch CancellationException will cause coroutines unable to be cancelled.
     if (throwable is CancellationException) {
         throw throwable

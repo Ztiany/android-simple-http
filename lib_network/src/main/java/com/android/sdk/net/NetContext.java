@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import com.android.sdk.net.core.exception.ErrorMessageFactory;
 import com.android.sdk.net.core.service.ServiceFactory;
 import com.android.sdk.net.core.service.ServiceHelper;
+import com.android.sdk.net.impl.ErrorMessageFactoryImpl;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

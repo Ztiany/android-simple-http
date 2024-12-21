@@ -41,4 +41,8 @@ public class GsonUtils {
         return GSON;
     }
 
+    public static String toJson(Object object) {
+        return GSON.toJson(object);
+    }
+
 }

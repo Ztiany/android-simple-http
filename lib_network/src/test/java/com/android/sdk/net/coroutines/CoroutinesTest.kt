@@ -6,12 +6,14 @@ import com.android.sdk.net.extension.coroutineMap
 import com.android.sdk.net.extension.map
 import com.android.sdk.net.extension.switchMap
 import com.android.sdk.net.extension.zip
-import io.reactivex.Single
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 
-private class HttpResult<T>(override val data: T, override val code: Int, override val message: String) : Result<T> {
+private class HttpResult<T>(
+    override val data: T,
+    override val code: Int,
+    override val message: String,
+) : Result<T> {
 
     override val isSuccess: Boolean
         get() = code == 200
@@ -36,8 +38,6 @@ private interface TestAPI {
     suspend fun getUserAddress(user: User): HttpResult<Address>
 
     suspend fun getUserNullable(): HttpResult<User?>
-
-    fun getUserRx(): Single<HttpResult<User>>
 }
 
 private suspend fun testExecuteApiCall(testAPI: TestAPI) {
@@ -115,20 +115,5 @@ private suspend fun testCallResult(testAPI: TestAPI) {
 private suspend fun testServiceContext(serviceContext: ServiceContext<TestAPI>) {
     serviceContext.apiCall {
         getUser()
-    }
-}
-
-private fun testRxJava(serviceContext: ServiceContext<TestAPI>) {
-    with(serviceContext) {
-        service.getUserRx()
-            .resultExtractor()
-            .subscribe(
-                {
-
-                },
-                {
-
-                }
-            )
     }
 }

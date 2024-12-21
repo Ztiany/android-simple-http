@@ -1,24 +1,28 @@
 package com.android.sdk.net
 
-import com.android.sdk.net.core.provider.ErrorListener
 import com.android.sdk.net.core.provider.ErrorBodyParser
+import com.android.sdk.net.core.provider.ErrorListener
 import com.android.sdk.net.core.provider.HttpConfig
 import com.android.sdk.net.core.result.ApiErrorFactory
-import com.android.sdk.net.coroutines.CoroutinesResultPostProcessor
-import com.android.sdk.net.rxjava2.RxResultPostTransformer
+import com.android.sdk.net.core.registry.ComponentRetriever
+import com.android.sdk.net.core.registry.requireComponent
 
-internal interface HostConfig {
+interface HostConfig : ComponentRetriever {
 
-    fun errorListener(): ErrorListener?
+    fun errorListener(): ErrorListener? {
+        return getComponent(ErrorListener::class.java)
+    }
 
-    fun httpConfig(): HttpConfig
+    fun httpConfig(): HttpConfig {
+        return requireComponent(HttpConfig::class.java)
+    }
 
-    fun apiErrorFactory(): ApiErrorFactory?
+    fun apiErrorFactory(): ApiErrorFactory? {
+        return getComponent(ApiErrorFactory::class.java)
+    }
 
-    fun coroutinesResultPostProcessor(): CoroutinesResultPostProcessor?
-
-    fun rxResultPostTransformer(): RxResultPostTransformer<*>?
-
-    fun errorBodyHandler(): ErrorBodyParser?
+    fun errorBodyHandler(): ErrorBodyParser? {
+        return getComponent(ErrorBodyParser::class.java)
+    }
 
 }
