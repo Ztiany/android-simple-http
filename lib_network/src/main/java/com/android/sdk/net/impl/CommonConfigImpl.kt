@@ -2,8 +2,10 @@ package com.android.sdk.net.impl
 
 import com.android.sdk.net.CommonConfig
 import com.android.sdk.net.core.config.ErrorMessageConverter
+import com.android.sdk.net.core.config.ErrorMessageFactory
 import com.android.sdk.net.core.config.PlatformInteractor
 import com.android.sdk.net.core.registry.ComponentRegistrar
+import com.android.sdk.net.core.registry.requireComponent
 
 internal class CommonConfigImpl(
     private val registrar: DefaultRegistrar = DefaultRegistrar(),
@@ -18,8 +20,12 @@ internal class CommonConfigImpl(
     }
 
     fun checkRequirement() {
-        if (getComponent(ErrorMessageConverter::class.java) == null || getComponent(PlatformInteractor::class.java) == null) {
-            throw IllegalStateException("CommonConfigImpl must be configured with ErrorMessageConverter, PlatformInteractor and Serializer!")
+        if (getComponent(PlatformInteractor::class.java) == null) {
+            throw IllegalStateException("PlatformInteractor is required.")
+        }
+        val component = requireComponent(ErrorMessageFactory::class.java)
+        if (component is ErrorMessageFactoryImpl && getComponent(ErrorMessageConverter::class.java) == null) {
+            throw IllegalStateException("ErrorMessageConverter is required.")
         }
     }
 

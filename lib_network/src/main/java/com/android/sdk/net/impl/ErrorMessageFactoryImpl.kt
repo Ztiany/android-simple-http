@@ -22,7 +22,7 @@ internal class ErrorMessageFactoryImpl : ErrorMessageFactory {
         } else if (exception is ServerErrorException) {
             val errorType = exception.errorType
             if (errorType == ServerErrorException.DATA_PARSE_ERROR) {
-                message = errorMessageConverter.convertWhenParsingFailed(exception)
+                message = errorMessageConverter.convertWhenParsingDataFailed(exception)
             } else if (errorType == ServerErrorException.EMPTY_SERVER_DATA) {
                 message = errorMessageConverter.convertWhenNoDataReturned(exception)
             }
@@ -36,7 +36,7 @@ internal class ErrorMessageFactoryImpl : ErrorMessageFactory {
         } else if (exception is ApiErrorException) {
             message = exception.message
             if (TextUtils.isEmpty(message)) {
-                message = errorMessageConverter.convertWhenApiError(exception)
+                message = errorMessageConverter.convertWhenApiException(exception)
             }
         }
 

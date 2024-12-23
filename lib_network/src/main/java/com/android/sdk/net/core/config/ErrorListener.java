@@ -16,6 +16,6 @@ public interface ErrorListener {
 
     void onParsingDataFailed(@NonNull ServerErrorException exception, @NotNull String hostFlag);
 
-    void onServerDataNotReturned(@NonNull ServerErrorException exception, @NotNull String hostFlag);
+    void onDataNotReturned(@NonNull ServerErrorException exception, @NotNull String hostFlag);
 
 }

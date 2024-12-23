@@ -41,7 +41,7 @@ private suspend fun <T> realCall(
     // TODO: 支持自定义处理
     if (result == null) {
         val serverErrorException = ServerErrorException(ServerErrorException.EMPTY_SERVER_DATA)
-        hostConfig.errorListener()?.onServerDataNotReturned(serverErrorException, hostFlag)
+        hostConfig.errorListener()?.onDataNotReturned(serverErrorException, hostFlag)
         throw serverErrorException
     }
 
@@ -56,7 +56,7 @@ private suspend fun <T> realCall(
         val data: T? = result.data
         if (data == null) {
             val error = ServerErrorException(ServerErrorException.EMPTY_SERVER_DATA)
-            hostConfig.errorListener()?.onServerDataNotReturned(error, hostFlag)
+            hostConfig.errorListener()?.onDataNotReturned(error, hostFlag)
             CallResult.Error(error)
         } else {
             CallResult.Success(data)

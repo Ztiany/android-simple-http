@@ -21,7 +21,7 @@ fun NetContext.init(context: Context, init: CommonConfigBuilder.() -> Unit): Net
 /**
  * Configure the default host.
  */
-fun NetContext.setDefaultHostConfig(config: HostConfigBuilder.() -> Unit): NetContext {
+fun NetContext.configDefaultHost(config: HostConfigBuilder.() -> Unit): NetContext {
     val builder = NetContext.get().newHostBuilder(NetContext.DEFAULT_CONFIG)
     config(builder)
     builder.setup()

@@ -24,7 +24,7 @@ public interface ErrorMessageConverter {
     /**
      * Generate a message for server data format error.
      */
-    CharSequence convertWhenParsingFailed(@NonNull ServerErrorException serverErrorException);
+    CharSequence convertWhenParsingDataFailed(@NonNull ServerErrorException serverErrorException);
 
     /**
      * Generate a message for server returning null entity.
@@ -44,7 +44,7 @@ public interface ErrorMessageConverter {
     /**
      * Generate a message for api error.
      */
-    CharSequence convertWhenApiError(@NonNull ApiErrorException exception);
+    CharSequence convertWhenApiException(@NonNull ApiErrorException exception);
 
     /**
      * Generate a message for unknown error.

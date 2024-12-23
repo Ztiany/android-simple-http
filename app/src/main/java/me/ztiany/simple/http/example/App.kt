@@ -5,7 +5,7 @@ import androidx.annotation.StringRes
 import com.android.sdk.net.NetContext
 import com.android.sdk.net.extension.addHostConfig
 import com.android.sdk.net.extension.init
-import com.android.sdk.net.extension.setDefaultHostConfig
+import com.android.sdk.net.extension.configDefaultHost
 import com.android.sdk.net.gson.GsonFactory
 import com.google.gson.Gson
 import timber.log.Timber
@@ -21,7 +21,7 @@ class App : Application() {
         NetContext.get().init(this) {
             errorMessageConverter(newErrorMessageConverter())
             platformInteractor(newPlatformInteractor())
-        }.setDefaultHostConfig {
+        }.configDefaultHost {
             httpConfig(newHttpConfig(gson))
             errorListener(newErrorHandler())
         }.addHostConfig("Mock") {

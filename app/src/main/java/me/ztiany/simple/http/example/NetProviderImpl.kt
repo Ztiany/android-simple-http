@@ -166,11 +166,16 @@ internal fun newMockErrorBodyParser(gson: Gson): HttpExceptionHandler {
 
 internal fun newErrorMessageConverter(): ErrorMessageConverter {
     return object : ErrorMessageConverter {
+
         override fun convertWhenNetError(ioException: IOException): CharSequence {
+            // If the network is connected, we consider IOE as a service error.
+            if (NetworkUtils.isConnected()) {
+                return getString(R.string.error_service_error)
+            }
             return getString(R.string.error_net_error)
         }
 
-        override fun convertWhenParsingFailed(serverErrorException: ServerErrorException): CharSequence {
+        override fun convertWhenParsingDataFailed(serverErrorException: ServerErrorException): CharSequence {
             return getString(R.string.error_service_data_error)
         }
 
@@ -186,7 +191,7 @@ internal fun newErrorMessageConverter(): ErrorMessageConverter {
             return getString(R.string.error_request_error)
         }
 
-        override fun convertWhenApiError(apiErrorException: ApiErrorException): CharSequence {
+        override fun convertWhenApiException(apiErrorException: ApiErrorException): CharSequence {
             return getString(R.string.error_api_code_mask_tips, apiErrorException.code)
         }
 
@@ -202,7 +207,7 @@ internal fun newErrorHandler() = object : ErrorListener {
         Timber.d("ApiHandler result: $apiErrorException, hostFlag: $hostFlag")
     }
 
-    override fun onServerDataNotReturned(exception: ServerErrorException, hostFlag: String) {
+    override fun onDataNotReturned(exception: ServerErrorException, hostFlag: String) {
 
     }
 

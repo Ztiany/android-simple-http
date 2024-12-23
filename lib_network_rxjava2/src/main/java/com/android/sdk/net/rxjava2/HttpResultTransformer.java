@@ -112,7 +112,7 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
             if (rResult.getData() == null) {
                 ServerErrorException throwable = new ServerErrorException(ServerErrorException.EMPTY_SERVER_DATA);
                 if (errorListener != null) {
-                    errorListener.onServerDataNotReturned(throwable, mHostFlag);
+                    errorListener.onDataNotReturned(throwable, mHostFlag);
                 }
                 throwAs(throwable);
             }

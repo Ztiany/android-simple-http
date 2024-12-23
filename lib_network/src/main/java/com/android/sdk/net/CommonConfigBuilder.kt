@@ -14,7 +14,7 @@ class CommonConfigBuilder internal constructor(private val netContext: NetContex
     /**
      * There is a default implementation of [ErrorMessageFactory] which will convert the exception to a string via [ErrorMessageFactory].
      *
-     * If you want entirely customize the error message, you can provide your own implementation of [ErrorMessageFactory].
+     * If you want entirely customize the process of conversion, you can provide your own implementation of [ErrorMessageFactory].
      */
     fun errorMessageFactory(errorMessageFactory: ErrorMessageFactory): CommonConfigBuilder {
         registerComponent(ErrorMessageFactory::class.java, errorMessageFactory)
