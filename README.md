@@ -27,12 +27,14 @@ fun example(){
     }
     
     // style 2:
-    val result = try {
-        executeApiCallNullable { serverApi.getListNullable() }
-    } catch (e: Exception) {
-        ensureActive()
-        Timber.d(errorHandler.convert(e).toString())
-        null
+    lifecycleScope.launch(Dispatchers.IO) {
+        val result = try {
+            executeApiCallNullable { serverApi.getListNullable() }
+        } catch (e: Exception) {
+            ensureActive()
+            Timber.d(errorHandler.convert(e).toString())
+            null
+        }
     }
 }
 ```
