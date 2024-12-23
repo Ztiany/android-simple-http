@@ -6,10 +6,10 @@ import com.google.gson.annotations.SerializedName;
 
 public class ErrorResult {
 
-    @SerializedName("msg")
+    @SerializedName("errorMsg")
     private String msg;
 
-    @SerializedName("code")
+    @SerializedName("errorCode")
     private int code;
 
     public int getCode() {

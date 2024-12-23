@@ -17,4 +17,13 @@ interface ServerAPI {
     @GET("article/list/0/json")
     fun getRxList(): Single<HttpResult<WanList>>
 
+    @GET("mock/httpError")
+    suspend fun mockHttpError(): HttpResult<WanList?>?
+
+    @GET("mock/apiError")
+    suspend fun mockApiError(): HttpResult<WanList?>?
+
+    @GET("mock/parsingError")
+    suspend fun mockParsingError(): HttpResult<WanList?>?
+
 }

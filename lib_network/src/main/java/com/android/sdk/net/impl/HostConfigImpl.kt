@@ -1,7 +1,7 @@
 package com.android.sdk.net.impl
 
 import com.android.sdk.net.HostConfig
-import com.android.sdk.net.core.provider.HttpConfig
+import com.android.sdk.net.core.config.HttpConfig
 import com.android.sdk.net.core.registry.ComponentRegistrar
 
 internal class HostConfigImpl(

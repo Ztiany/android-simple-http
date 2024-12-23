@@ -28,7 +28,7 @@ private suspend fun <T> realCall(
 ): CallResult<T> {
 
     val netContext = NetContext.get()
-    val netProvider = netContext.hostConfig(hostFlag)
+    val hostConfig = netContext.hostConfig(hostFlag)
 
     val result: Result<T>?
 
@@ -38,17 +38,17 @@ private suspend fun <T> realCall(
         return CallResult.Error(transformHttpException(hostFlag, throwable))
     }
 
-    //TODO: 支持自定义处理
+    // TODO: 支持自定义处理
     if (result == null) {
         val serverErrorException = ServerErrorException(ServerErrorException.EMPTY_SERVER_DATA)
-        netProvider.errorListener()?.onServerDataEmptyError(serverErrorException, hostFlag)
+        hostConfig.errorListener()?.onServerDataNotReturned(serverErrorException, hostFlag)
         throw serverErrorException
     }
 
     return if (!result.isSuccess) { //检测响应码是否正确
 
-        CallResult.Error(createApiException(result, hostFlag, netProvider).apply {
-            netProvider.errorListener()?.onApiErrorException(this, hostFlag)
+        CallResult.Error(createApiException(result, hostFlag).apply {
+            hostConfig.errorListener()?.onApiException(this, hostFlag)
         })
 
     } else if (requireNonNullData) { //如果约定必须返回的数据却没有返回数据，则认为是服务器错误。
@@ -56,7 +56,7 @@ private suspend fun <T> realCall(
         val data: T? = result.data
         if (data == null) {
             val error = ServerErrorException(ServerErrorException.EMPTY_SERVER_DATA)
-            netProvider.errorListener()?.onServerDataEmptyError(error, hostFlag)
+            hostConfig.errorListener()?.onServerDataNotReturned(error, hostFlag)
             CallResult.Error(error)
         } else {
             CallResult.Success(data)

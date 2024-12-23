@@ -2,16 +2,13 @@ package com.android.sdk.net.core.service
 
 import com.android.sdk.net.NetContext
 import com.android.sdk.net.ServiceContext
-import com.android.sdk.net.core.json.ErrorJsonLenientConverterFactory
-import com.android.sdk.net.core.json.GsonUtils
 import com.android.sdk.net.core.progress.RequestProgressInterceptor
 import com.android.sdk.net.core.progress.ResponseProgressInterceptor
 import com.android.sdk.net.core.progress.UrlProgressListener
-import com.android.sdk.net.core.provider.HttpConfig
+import com.android.sdk.net.core.config.HttpConfig
 import com.android.sdk.net.impl.ServiceContextImpl
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 /**
  * @author Ztiany
@@ -22,25 +19,20 @@ class ServiceFactory internal constructor(
     httpConfig: HttpConfig,
 ) {
 
-    private val baseUrl: String = httpConfig.baseUrl()
-
     private val retrofit: Retrofit
 
     init {
-        val builder = Retrofit.Builder()
+        val builder = Retrofit.Builder().client(httpClient).apply { httpConfig.configRetrofit(this) }
+        val listIterator = builder.converterFactories().listIterator()
 
-        if (!httpConfig.configRetrofit(httpClient, builder)) {
-            builder
-                .baseUrl(baseUrl)
-                .client(httpClient)
-                .addConverterFactory(ErrorJsonLenientConverterFactory(hostFlag, GsonConverterFactory.create(GsonUtils.gson())))
+        while (listIterator.hasNext()) {
+            val factory = listIterator.next()
+            if (factory !is ConversionLenientConverterFactory) {
+                listIterator.set(ConversionLenientConverterFactory(hostFlag, factory))
+            }
         }
 
         retrofit = builder.build()
-    }
-
-    fun baseUrl(): String {
-        return baseUrl
     }
 
     private fun checkIfDefaultHostFlag() {

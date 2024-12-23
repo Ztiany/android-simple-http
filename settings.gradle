@@ -1,4 +1,5 @@
 include ':app'
 
 include ':lib_network'
+include ':lib_network_gson'
 include ':lib_network_rxjava2'

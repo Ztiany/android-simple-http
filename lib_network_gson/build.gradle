@@ -1,10 +1,9 @@
 plugins {
     id "com.android.library"
-    id "kotlin-android"
 }
 
 android {
-    namespace "com.android.sdk.net"
+    namespace "com.android.sdk.net.gson"
 
     compileSdk rootProject.properties["app.compileSdk"] as int
 
@@ -21,11 +20,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
-        freeCompilerArgs += ["-Xcontext-receivers"]
-    }
 }
 
 tasks.register('javadoc', Javadoc) {
@@ -33,9 +27,7 @@ tasks.register('javadoc', Javadoc) {
 }
 
 dependencies {
-    api project(":lib_network")
-    api "io.reactivex.rxjava2:rxjava:2.2.21"
-    api "com.squareup.retrofit2:adapter-rxjava2:2.9.0"
     implementation "androidx.annotation:annotation:1.8.2"
     implementation "com.jakewharton.timber:timber:4.7.1"
+    implementation "com.google.code.gson:gson:2.11.0"
 }

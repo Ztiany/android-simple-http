@@ -6,11 +6,9 @@ import androidx.annotation.NonNull;
 
 import com.android.sdk.net.HostConfig;
 import com.android.sdk.net.NetContext;
+import com.android.sdk.net.core.config.ErrorListener;
 import com.android.sdk.net.core.exception.ApiErrorException;
 import com.android.sdk.net.core.exception.ServerErrorException;
-import com.android.sdk.net.core.json.GsonUtils;
-import com.android.sdk.net.core.provider.ErrorListener;
-import com.android.sdk.net.core.result.ApiErrorFactory;
 import com.android.sdk.net.core.result.Result;
 import com.android.sdk.net.coroutines.CommonInternalKt;
 
@@ -102,9 +100,9 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
         ErrorListener errorListener = hostConfig.errorListener();
 
         if (!rResult.isSuccess()) {
-            ApiErrorException exception = createException(rResult, mHostFlag, hostConfig);
+            ApiErrorException exception = createException(rResult, mHostFlag);
             if (errorListener != null) {
-                errorListener.onApiErrorException(exception, mHostFlag);
+                errorListener.onApiException(exception, mHostFlag);
             }
             throwAs(exception);
         }
@@ -114,7 +112,7 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
             if (rResult.getData() == null) {
                 ServerErrorException throwable = new ServerErrorException(ServerErrorException.EMPTY_SERVER_DATA);
                 if (errorListener != null) {
-                    errorListener.onServerDataEmptyError(throwable, mHostFlag);
+                    errorListener.onServerDataNotReturned(throwable, mHostFlag);
                 }
                 throwAs(throwable);
             }
@@ -123,21 +121,13 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
         return mDataExtractor.getDataFromHttpResult(rResult);
     }
 
-    private ApiErrorException createException(@NonNull Result<Upstream> rResult, String flag, HostConfig hostConfig) {
-        ApiErrorFactory apiErrorFactory = NetContext.get().hostConfig(flag).apiErrorFactory();
-
-        if (apiErrorFactory == null) {
-            apiErrorFactory = hostConfig.apiErrorFactory();
-        }
-
-        if (apiErrorFactory != null) {
-            ApiErrorException apiErrorException = apiErrorFactory.create(rResult, flag);
-            if (apiErrorException != null) {
-                return apiErrorException;
-            }
-        }
-
-        return new ApiErrorException(rResult.getCode(), rResult.getMessage(), GsonUtils.toJson(rResult), flag);
+    private ApiErrorException createException(@NonNull Result<Upstream> result, String flag) {
+        return new ApiErrorException(
+                result.getCode(),
+                result.getMessage(),
+                result,
+                flag
+        );
     }
 
     private <E extends Throwable> void throwAs(Throwable throwable) throws E {

@@ -5,6 +5,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.android.sdk.net.NetContext
+import com.android.sdk.net.core.exception.ApiErrorException
 import com.android.sdk.net.coroutines.apiCall
 import com.android.sdk.net.coroutines.apiCallNullable
 import com.android.sdk.net.coroutines.executeApiCall
@@ -28,7 +29,7 @@ class MainActivity : AppCompatActivity() {
 
     private var serverApi = NetContext.get().defaultServiceFactory().createDefault<ServerAPI>()
 
-    private var serverContext = NetContext.get().serviceFactory("Mock").createServiceContext<ServerAPI>()
+    private var mockedServiceContext = NetContext.get().serviceFactory("Mock").createServiceContext<ServerAPI>()
 
     private val errorHandler = NetContext.get().errorMessageFactory
 
@@ -69,8 +70,16 @@ class MainActivity : AppCompatActivity() {
             rxRequest()
         }
 
-        findViewById<View>(R.id.btn_test_mock).setOnClickListener {
-            requestMock()
+        findViewById<View>(R.id.btn_test_mock_http_error).setOnClickListener {
+            requestMockHttpError()
+        }
+
+        findViewById<View>(R.id.btn_test_mock_api_error).setOnClickListener {
+            requestMockApiError()
+        }
+
+        findViewById<View>(R.id.btn_test_mock_parsing_error).setOnClickListener {
+            requestMockParsingError()
         }
     }
 
@@ -90,7 +99,7 @@ class MainActivity : AppCompatActivity() {
             executeApiCallNullable { serverApi.getListNullable() }
         } catch (e: Exception) {
             ensureActive()
-            Timber.d(errorHandler.createMessage(e).toString())
+            Timber.d(errorHandler.convert(e).toString())
             null
         }
         Timber.d("data: $data")
@@ -100,7 +109,7 @@ class MainActivity : AppCompatActivity() {
         apiCall { serverApi.getList() } onSuccess {
             Timber.d("data: $it")
         } onError {
-            Timber.d(errorHandler.createMessage(it).toString())
+            Timber.d(errorHandler.convert(it).toString())
         }
         Timber.d("I am still alive.")
     }
@@ -110,17 +119,36 @@ class MainActivity : AppCompatActivity() {
         callResult onSuccess {
             Timber.d("data: $it")
         } onError {
-            Timber.d(errorHandler.createMessage(it).toString())
+            Timber.d(errorHandler.convert(it).toString())
         }
         Timber.d("I am still alive.")
     }
 
-    private fun requestMock() = lifecycleScope.launch(Dispatchers.IO) {
-        serverContext.apiCallNullable { getListAllNullable() } onSuccess {
-            Timber.d("apiCallNullable data: $it")
+    private fun requestMockHttpError() = lifecycleScope.launch(Dispatchers.IO) {
+        mockedServiceContext.apiCallNullable { mockHttpError() } onSuccess {
+            Timber.d("requestMockHttpError.apiCallNullable onSuccess, data: $it")
         } onError {
-            Timber.e(it, "apiCallNullable")
-            Timber.d("apiCallNullable ${errorHandler.createMessage(it)}")
+            Timber.e(it, "requestMockHttpError.apiCallNullable onError")
+            Timber.d("requestMockHttpError.apiCallNullable onError, message: ${errorHandler.convert(it)}")
+        }
+    }
+
+    private fun requestMockParsingError() = lifecycleScope.launch(Dispatchers.IO) {
+        mockedServiceContext.apiCallNullable { mockParsingError() } onSuccess {
+            Timber.d("requestMockParsingError.apiCallNullable onSuccess, data: $it")
+        } onError {
+            Timber.e(it, "requestMockParsingError.apiCallNullable onError")
+            Timber.d("requestMockParsingError.apiCallNullable onError, message: ${errorHandler.convert(it)}")
+        }
+    }
+
+    private fun requestMockApiError() = lifecycleScope.launch(Dispatchers.IO) {
+        mockedServiceContext.apiCallNullable { mockApiError() } onSuccess {
+            Timber.d("requestMockApiError.apiCallNullable onSuccess, data: $it")
+        } onError {
+            Timber.e(it, "requestMockApiError.apiCallNullable onError")
+            Timber.d("requestMockApiError.apiCallNullable onError, message: ${errorHandler.convert(it)}")
+            Timber.d("requestMockApiError.apiCallNullable onError, raw: ${(it as? ApiErrorException)?.raw}")
         }
     }
 

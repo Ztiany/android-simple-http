@@ -1,6 +1,6 @@
 package com.android.sdk.net.core.service
 
-import com.android.sdk.net.core.provider.HttpConfig
+import com.android.sdk.net.core.config.HttpConfig
 import okhttp3.OkHttpClient
 import java.util.concurrent.ConcurrentHashMap
 
