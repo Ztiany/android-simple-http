@@ -28,7 +28,7 @@ private val EMPTY_ENTRY = object : CoroutinesResultPostProcessor {
     }
 }
 
-fun transformHttpException(hostFlag: String, throwable: Throwable): Throwable {
+internal fun transformHttpException(hostFlag: String, throwable: Throwable): Throwable {
     // Catch CancellationException will cause coroutines unable to be cancelled.
     if (throwable is CancellationException) {
         throw throwable

@@ -1,13 +1,13 @@
 package com.android.sdk.net
 
 import com.android.sdk.net.core.result.Result
-import com.android.sdk.net.optional.Optional
 import com.android.sdk.net.rxjava2.internalOptionalExtractor
 import com.android.sdk.net.rxjava2.internalResultChecker
 import com.android.sdk.net.rxjava2.internalResultExtractor
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
+import java.util.Optional
 
 context(ServiceContext<*>)
   fun <T : Result<E>, E> Observable<T>.optionalExtractor(): Observable<Optional<E>> {

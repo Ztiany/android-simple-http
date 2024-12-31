@@ -3,10 +3,10 @@ package com.android.sdk.net.rxjava2
 import com.android.sdk.net.NetContext
 import com.android.sdk.net.ServiceContext
 import com.android.sdk.net.core.result.Result
-import com.android.sdk.net.optional.Optional
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
+import java.util.Optional
 
 ///////////////////////////////////////////////////////////////////////////
 // Public

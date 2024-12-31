@@ -7,10 +7,10 @@ import androidx.annotation.NonNull;
 import com.android.sdk.net.HostConfig;
 import com.android.sdk.net.NetContext;
 import com.android.sdk.net.core.config.ErrorListener;
+import com.android.sdk.net.core.config.HttpExceptionHandler;
 import com.android.sdk.net.core.exception.ApiErrorException;
 import com.android.sdk.net.core.exception.ServerErrorException;
 import com.android.sdk.net.core.result.Result;
-import com.android.sdk.net.coroutines.CommonInternalKt;
 
 import org.reactivestreams.Publisher;
 
@@ -22,6 +22,7 @@ import io.reactivex.ObservableTransformer;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
 import io.reactivex.SingleTransformer;
+import retrofit2.HttpException;
 
 public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstream>>
         implements ObservableTransformer<T, Downstream>, FlowableTransformer<T, Downstream>, SingleTransformer<T, Downstream> {
@@ -94,13 +95,13 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
         }
     }
 
-    private Downstream processData(Result<Upstream> rResult) {
+    private Downstream processData(Result<Upstream> result) {
         NetContext netContext = NetContext.get();
         HostConfig hostConfig = netContext.hostConfig(mHostFlag);
         ErrorListener errorListener = hostConfig.errorListener();
 
-        if (!rResult.isSuccess()) {
-            ApiErrorException exception = createException(rResult, mHostFlag);
+        if (!result.isSuccess()) {
+            ApiErrorException exception = createException(result, mHostFlag);
             if (errorListener != null) {
                 errorListener.onApiException(exception, mHostFlag);
             }
@@ -109,7 +110,7 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
 
         if (mRequireNonNullData) {
             // If the data that must be returned is not returned, it is considered a server error.
-            if (rResult.getData() == null) {
+            if (result.getData() == null) {
                 ServerErrorException throwable = new ServerErrorException(ServerErrorException.EMPTY_SERVER_DATA);
                 if (errorListener != null) {
                     errorListener.onDataNotReturned(throwable, mHostFlag);
@@ -118,7 +119,7 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
             }
         }
 
-        return mDataExtractor.getDataFromHttpResult(rResult);
+        return mDataExtractor.getDataFromHttpResult(result);
     }
 
     private ApiErrorException createException(@NonNull Result<Upstream> result, String flag) {
@@ -135,7 +136,21 @@ public class HttpResultTransformer<Upstream, Downstream, T extends Result<Upstre
     }
 
     private Throwable transformError(Throwable throwable) {
-        return CommonInternalKt.transformHttpException(mHostFlag, throwable);
+        HttpExceptionHandler exceptionHandler = NetContext.get().hostConfig(mHostFlag).errorBodyHandler();
+        if (exceptionHandler == null) {
+            return throwable;
+        }
+
+        if (throwable instanceof HttpException httpException) {
+            if (httpException.code() < 500) {
+                Throwable transformed = exceptionHandler.handleException(httpException, mHostFlag);
+                if (transformed != null) {
+                    return transformed;
+                }
+            }
+        }
+
+        return throwable;
     }
 
     @SuppressWarnings("unchecked")

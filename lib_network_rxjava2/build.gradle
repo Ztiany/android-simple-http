@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace "com.android.sdk.net"
+    namespace "com.android.sdk.net.rxjava2"
 
     compileSdk rootProject.properties["app.compileSdk"] as int
 
