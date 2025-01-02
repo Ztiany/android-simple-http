@@ -58,7 +58,7 @@ mavenPublishing {
         name = "android-simple-http"
         description = "An android library makes http requesting easy."
         inceptionYear = "2020"
-        url = "https://github.com/username/mylibrary/"
+        url = "https://github.com/Ztiany/android-simple-http/"
         licenses {
             license {
                 name = "The Apache License, Version 2.0"
