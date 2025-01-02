@@ -49,8 +49,12 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-gson:2.11.0"
     implementation "com.squareup.okhttp3:logging-interceptor:4.12.0"
 
-    implementation project(':lib_network')
-    implementation project(':lib_network_rxjava2')
+    //implementation project(':lib_network')
+    implementation "io.github.ztiany:android-simple-http:2.0.0"
+
+    //implementation project(':lib_network_rxjava2')
+    implementation "io.github.ztiany:android-simple-http-rxjava2:2.0.0"
+
     implementation project(':lib_network_gson')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.24"

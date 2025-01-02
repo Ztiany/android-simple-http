@@ -6,10 +6,10 @@ import com.google.gson.annotations.SerializedName;
 
 public class MockErrorResult {
 
-    @SerializedName("message")
+    @SerializedName("errorMsg")
     private String msg;
 
-    @SerializedName("status")
+    @SerializedName("errorCode")
     private int code;
 
     public int getCode() {

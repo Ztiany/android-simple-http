@@ -1,6 +1,9 @@
+import com.vanniktech.maven.publish.SonatypeHost
+
 plugins {
     id "com.android.library"
     id "kotlin-android"
+    id "com.vanniktech.maven.publish" version "0.30.0"
 }
 
 android {
@@ -38,4 +41,41 @@ dependencies {
     api "com.squareup.retrofit2:adapter-rxjava2:2.9.0"
     implementation "androidx.annotation:annotation:1.8.2"
     implementation "com.jakewharton.timber:timber:4.7.1"
+}
+
+mavenPublishing {
+    // configuring maven central
+    // or when publishing to https://central.sonatype.com/
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    signAllPublications()
+
+    // configuring the pom
+    def libVersion = rootProject.properties["app.publishVersion"] as String
+    coordinates("io.github.ztiany", "android-simple-http-rxjava2", libVersion)
+
+    pom {
+        name = "android-simple-http-rxjava2"
+        description = "An android library makes http requesting easy."
+        inceptionYear = "2020"
+        url = "https://github.com/Ztiany/android-simple-http/"
+        licenses {
+            license {
+                name = "The Apache License, Version 2.0"
+                url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                distribution = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+            }
+        }
+        developers {
+            developer {
+                id = "ztiany"
+                name = "Alien"
+                url = "https://github.com/Ztiany/"
+            }
+        }
+        scm {
+            url = "https://github.com/Ztiany/android-simple-http/"
+            connection = "scm:git:git://github.com/Ztiany/android-simple-http.git"
+            developerConnection = "scm:git:ssh://git@github.com/Ztiany/android-simple-http.git"
+        }
+    }
 }
