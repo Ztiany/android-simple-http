@@ -27,7 +27,7 @@ class App : Application() {
         }.addHostConfig("Mock") {
             httpConfig(newMockHttpConfig(gson))
             errorListener(newErrorHandler())
-            errorBodyParser(newMockErrorBodyParser(gson))
+            httpExceptionHandler(newMockErrorBodyParser(gson))
         }
     }
 

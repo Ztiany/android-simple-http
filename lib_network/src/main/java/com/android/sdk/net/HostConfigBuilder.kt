@@ -24,7 +24,7 @@ class HostConfigBuilder internal constructor(
         return this
     }
 
-    fun errorBodyParser(errorBodyParser: HttpExceptionHandler): HostConfigBuilder {
+    fun httpExceptionHandler(errorBodyParser: HttpExceptionHandler): HostConfigBuilder {
         registerComponent(HttpExceptionHandler::class.java, errorBodyParser)
         return this
     }

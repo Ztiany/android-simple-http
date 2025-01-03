@@ -1,5 +1,16 @@
-include ':app'
+pluginManagement {
+    repositories {
+        maven { url "https://maven.aliyun.com/repository/gradle-plugin" }
+        maven { url "https://maven.aliyun.com/repository/public" }
+        maven { url "https://maven.aliyun.com/repository/central" }
+        maven { url "https://maven.aliyun.com/repository/apache-snapshots" }
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
 
+include ':app'
 include ':lib_network'
 include ':lib_network_gson'
 include ':lib_network_rxjava2'

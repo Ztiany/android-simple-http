@@ -1,10 +1,12 @@
 buildscript {
     repositories {
-        maven{url "https://maven.aliyun.com/repository/gradle-plugin"}
-        maven{url "https://maven.aliyun.com/repository/public"}
-        maven{url "https://maven.aliyun.com/repository/central"}
-        mavenCentral()
+        maven { url "https://maven.aliyun.com/repository/gradle-plugin" }
+        maven { url "https://maven.aliyun.com/repository/public" }
+        maven { url "https://maven.aliyun.com/repository/central" }
+        maven { url "https://maven.aliyun.com/repository/apache-snapshots" }
         google()
+        mavenCentral()
+        gradlePluginPortal()
     }
 
     dependencies {
