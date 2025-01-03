@@ -16,7 +16,7 @@ public class IntegerJsonDeserializer implements JsonDeserializer<Integer> {
         try {
             return json.getAsInt();
         } catch (Exception e) {
-            Timber.e(e, "IntegerJsonDeserializer-deserialize-error:%s", (json != null ? json.toString() : ""));
+            Timber.e(e, "IntegerJsonDeserializer-deserialize-error: %s", (json != null ? json.toString() : ""));
             return null;
         }
     }

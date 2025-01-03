@@ -16,7 +16,7 @@ public class StringJsonDeserializer implements JsonDeserializer<String> {
         try {
             return json.getAsString();
         } catch (Exception e) {
-            Timber.e(e, "StringJsonDeserializer-deserialize-error:%s", (json != null ? json.toString() : ""));
+            Timber.e(e, "StringJsonDeserializer-deserialize-error: %s", (json != null ? json.toString() : ""));
             return null;
         }
     }

@@ -16,7 +16,7 @@ public class FloatJsonDeserializer implements JsonDeserializer<Float> {
         try {
             return json.getAsFloat();
         } catch (Exception e) {
-            Timber.e(e, "FloatJsonDeserializer-deserialize-error:%s", (json != null ? json.toString() : ""));
+            Timber.e(e, "FloatJsonDeserializer-deserialize-error: %s", (json != null ? json.toString() : ""));
             return null;
         }
     }

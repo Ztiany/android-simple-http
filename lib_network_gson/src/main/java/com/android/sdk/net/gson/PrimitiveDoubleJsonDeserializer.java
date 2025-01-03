@@ -16,7 +16,7 @@ public class PrimitiveDoubleJsonDeserializer implements JsonDeserializer<Double>
         try {
             return json.getAsDouble();
         } catch (Exception e) {
-            Timber.e(e, "DoubleJsonDeserializer-deserialize-error:%s", (json != null ? json.toString() : ""));
+            Timber.e(e, "DoubleJsonDeserializer-deserialize-error: %s", (json != null ? json.toString() : ""));
             return 0D;
         }
     }
