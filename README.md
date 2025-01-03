@@ -44,5 +44,5 @@ check out examples in the app module for more details.
 ## 3 Installation
 
 ```groovy
-implementation "io.github.ztiany:android-simple-http:2.0.0"
+implementation "io.github.ztiany:android-simple-http:2.0.1"
 ```
