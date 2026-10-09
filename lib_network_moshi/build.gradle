@@ -1,0 +1,72 @@
+import com.vanniktech.maven.publish.SonatypeHost
+
+plugins {
+    id "com.android.library"
+    id "com.vanniktech.maven.publish" version "0.30.0"
+}
+
+android {
+    namespace "com.android.sdk.net.moshi"
+
+    compileSdk rootProject.properties["app.compileSdk"] as int
+
+    defaultConfig {
+        minSdk rootProject.properties["app.minSdk"] as int
+        targetSdk rootProject.properties["app.targetSdk"] as int
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+tasks.register('javadoc', Javadoc) {
+    options.encoding = "utf-8"
+}
+
+dependencies {
+    api "com.squareup.moshi:moshi:1.15.2"
+    implementation "com.squareup.moshi:moshi-kotlin:1.15.2"
+    implementation "com.jakewharton.timber:timber:4.7.1"
+
+    testImplementation "junit:junit:4.13.2"
+}
+
+mavenPublishing {
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    signAllPublications()
+
+    def libVersion = rootProject.properties["app.publishVersion"] as String
+    coordinates("io.github.ztiany", "android-simple-http-moshi", libVersion)
+
+    pom {
+        name = "android-simple-http-moshi"
+        description = "Moshi serialization support for android-simple-http."
+        inceptionYear = "2020"
+        url = "https://github.com/Ztiany/android-simple-http/"
+        licenses {
+            license {
+                name = "The Apache License, Version 2.0"
+                url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                distribution = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+            }
+        }
+        developers {
+            developer {
+                id = "ztiany"
+                name = "Alien"
+                url = "https://github.com/Ztiany/"
+            }
+        }
+        scm {
+            url = "https://github.com/Ztiany/android-simple-http/"
+            connection = "scm:git:git://github.com/Ztiany/android-simple-http.git"
+            developerConnection = "scm:git:ssh://git@github.com/Ztiany/android-simple-http.git"
+        }
+    }
+}
